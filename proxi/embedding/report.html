@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Embedding + Agent Architecture Notes (proxi)</title>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: #0b0f14;
+        color: #e6edf3;
+        line-height: 1.5;
+      }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 60px; }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+      .sub { color: #9aa4b2; font-size: 13px; margin-bottom: 16px; }
+      h2 { font-size: 16px; margin: 28px 0 10px; }
+      h3 { font-size: 14px; margin: 18px 0 8px; color: #cbd5e1; }
+      p, li { font-size: 13px; }
+      code, pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+      }
+      pre {
+        background: #0f1620;
+        border: 1px solid #233044;
+        border-radius: 8px;
+        padding: 12px;
+        overflow: auto;
+      }
+      a { color: #7dd3fc; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .card {
+        background: #0f1620;
+        border: 1px solid #233044;
+        border-radius: 8px;
+        padding: 14px;
+        margin: 12px 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 980px) {
+        .grid { grid-template-columns: 1fr 1fr; }
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        border: 1px solid #2a3a53;
+        color: #a3b5d0;
+        margin-right: 6px;
+      }
+      .ok { border-color: #1f6f4a; color: #86efac; }
+      .warn { border-color: #6b4f1d; color: #fde68a; }
+      .bad { border-color: #7f1d1d; color: #fecaca; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      th, td { border-bottom: 1px solid #233044; padding: 8px 10px; text-align: left; vertical-align: top; }
+      th { color: #9aa4b2; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Embedding + Agent Architecture Notes (proxi)</h1>
+      <div class="sub">
+        Generated: 2026-05-27. Audience: maintainers of this repo. Language: English only (codebase constraint).
+      </div>
+
+      <div class="card">
+        <span class="tag ok">Implemented</span>
+        <span class="tag ok">OpenAI-Compatible Tool Calls</span>
+        <span class="tag ok">SQLite State DB (local-first)</span>
+        <span class="tag warn">RAG Quality Depends on SSOT Content</span>
+        <span class="tag warn">Vector Store (Qdrant) Not Enabled Yet</span>
+      </div>
+
+      <h2>1) Current Endpoints (Server)</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>OpenAI-Compatible</h3>
+          <ul>
+            <li><code>POST /v1/chat/completions</code> - Supports tools, tool_choice, streaming, vision content parts (pass-through)</li>
+            <li><code>POST /v1/completions</code> - Legacy text completions wrapper</li>
+            <li><code>POST /v1/audio/transcriptions</code>, <code>/translations</code></li>
+            <li><code>POST /v1/embeddings</code> - Requires an embeddings model to be available on Groq account</li>
+            <li><code>GET /v1/models</code>, <code>GET /v1/models/:id</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Agent / RAG</h3>
+          <ul>
+            <li><code>POST /v1/agent/chat</code> - Default mode returns OpenAI <code>chat.completion</code> objects; legacy mode (<code>{"legacy": true}</code>) returns <code>AgentResponse</code> wrapper.</li>
+            <li><code>POST /v1/agent/directory</code> - Sets working directory; permission gating applies unless the workspace is trusted.</li>
+            <li><code>POST /v1/agent/permission</code> - Grants scan/write/execute permissions and may create <code>.zombiecoder/SSOT.md</code>.</li>
+            <li><code>GET /v1/agent/status</code>, <code>GET /v1/agent/ssot</code>, <code>GET /v1/agent/routes</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>2) Model Routing (Agent)</h2>
+      <div class="card">
+        <p>
+          Routing is handled by <code>src/services/mawlanaRouter.ts</code>. It picks from a preference list, but always resolves against
+          the <code>/v1/models</code> list actually loaded from Groq. This avoids routing to non-existent models.
+        </p>
+        <p>
+          Categories: <code>chat</code>, <code>code</code>, <code>rag</code>, <code>guard</code>.
+        </p>
+      </div>
+
+      <h2>3) Rate Limit Behavior</h2>
+      <div class="card">
+        <p>
+          To reduce accidental "TPM requested" failures, the bridge now defaults to <code>max_tokens=1024</code> if the client does not specify
+          a completion token budget. The client can override with <code>max_tokens</code>.
+        </p>
+      </div>
+
+      <h2>4) SQLite State Store</h2>
+      <div class="card">
+        <p>
+          A local SQLite file is created at <code>.zombiecoder/state.db</code> under the workspace. Tables are created for:
+          personas, models, model rate limits, workspaces (trusted directory gating), conversations, and conversation messages.
+        </p>
+        <pre><code>Tables:
+  agent_personas(persona_id, name, system_prompt, updated_at)
+  models(model_id, owned_by, category, context_window, max_tokens, updated_at)
+  model_rate_limits(model_id, rpm, tpm, updated_at)
+  workspaces(workspace_id, user_id, directory, trusted, created_at, updated_at)
+  conversations(conversation_id, workspace_id, user_id, title, created_at, updated_at)
+  conversation_messages(id, conversation_id, role, content, created_at)</code></pre>
+      </div>
+
+      <h2>5) Workspace Trust / Permission Flow</h2>
+      <div class="card">
+        <p>
+          Default behavior is conservative: a directory requires explicit permission unless it is marked trusted for the given
+          <code>(user_id, workspace_id, directory)</code> in SQLite. If trusted, the agent can auto-initialize <code>.zombiecoder/</code>
+          and create <code>SSOT.md</code> without asking.
+        </p>
+        <p>
+          Request fields supported:
+        </p>
+        <pre><code>{
+  "directory": "/abs/path/to/project",
+  "user_id": "admin",
+  "workspace_id": "local-workspace-1"
+}</code></pre>
+      </div>
+
+      <h2>6) RAG Reality Check</h2>
+      <div class="card">
+        <p>
+          The current SSOT is a structural inventory (tree + file list). This is useful for discovery, but it is not enough for
+          high-quality "answer from code" behavior. For better RAG, SSOT should include summaries of key modules, routes, and configs,
+          and/or a separate index should store chunked file contents.
+        </p>
+      </div>
+
+      <h2>7) Embeddings and Vector Store Plan</h2>
+      <div class="card">
+        <p>
+          This repo includes local embedding model artifacts under <code>./embedding/</code>. The recommended practical approach is:
+        </p>
+        <ul>
+          <li>Use an in-process embeddings library (e.g. FastEmbed) to generate vectors for chunks.</li>
+          <li>Store vectors in Qdrant (runtime) under a per-workspace collection name.</li>
+          <li>Keep only small, relevant runtime state in the vector DB; keep authoritative state in SSOT + SQLite.</li>
+        </ul>
+      </div>
+
+      <h2>8) Groq Tool Use: Built-In Tools vs Remote MCP vs Local Tool Calling</h2>
+      <div class="card">
+        <p>
+          Groq documents three tool use patterns:
+        </p>
+        <ul>
+          <li><strong>Built-in tools</strong>: zero orchestration (Groq executes tools server-side).</li>
+          <li><strong>Remote MCP</strong>: connect the model to an MCP server URL (HTTP/SSE or stdio), and Groq performs tool discovery and calls.</li>
+          <li><strong>Local tool calling</strong>: you implement tool execution on your side; the model outputs tool calls.</li>
+        </ul>
+        <p>
+          Recommendation for this project:
+        </p>
+        <ul>
+          <li>If you need strict local-first behavior and full auditability, prefer local tool calling + SQLite logs.</li>
+          <li>If you want minimal glue code for external SaaS integrations, remote MCP can be reasonable, but you must treat MCP server uptime and rate limits as a production dependency.</li>
+        </ul>
+      </div>
+
+      <h2>9) References (Official)</h2>
+      <div class="card">
+        <ul>
+          <li><a href="https://console.groq.com/docs/models">Groq: Supported Models</a></li>
+          <li><a href="https://console.groq.com/docs/rate-limits">Groq: Rate Limits</a></li>
+          <li><a href="https://console.groq.com/docs/tool-use/remote-mcp">Groq: Remote Tools and MCP</a></li>
+          <li><a href="https://console.groq.com/docs/tool-use/remote-mcp/connectors">Groq: MCP Connectors</a></li>
+          <li><a href="https://platform.openai.com/docs/api-reference/chat/create-chat-completion">OpenAI: Chat Completions (tools/tool_choice/tool_calls)</a></li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
+

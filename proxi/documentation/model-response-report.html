@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Groq Model Response Report</title>
+  <style>
+    body { background:#0b1220; color:#e6edf3; font-family:Inter,system-ui,sans-serif; margin:0; padding:24px; }
+    h1,h2 { margin:0 0 12px 0; }
+    .hero { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:flex-end; margin-bottom:24px; }
+    .card { background:#111827; border:1px solid #273147; border-radius:18px; padding:18px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .summary { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+    .stat { padding:16px; border-radius:14px; background:#141c2f; }
+    .stat strong { display:block; font-size:1.9rem; line-height:1; margin-bottom:4px; color:#58a6ff; }
+    table { width:100%; border-collapse:collapse; margin-top:16px; }
+    th, td { text-align:left; padding:12px 14px; border-bottom:1px solid #1f283d; vertical-align:top; }
+    th { background:#121a2d; color:#8fa4bf; font-size:.85rem; text-transform:uppercase; letter-spacing:.04em; }
+    tr.row-error td { color:#ffb3b3; }
+    tr.row-success td { color:#e6edf3; }
+    code { font-family:source-code-pro,monospace; background:#172136; padding:4px 6px; border-radius:6px; }
+    pre { margin:0; white-space:pre-wrap; word-break:break-word; font-size:.82rem; background:#101623; padding:10px; border-radius:10px; }
+    a { color:#58a6ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div>
+      <h1>Groq Model Response Report</h1>
+      <p>Generated from <code>http://localhost:5001</code> on 2026-05-24T01:09:47.847Z</p>
+      <p>16 models tested, 12 succeeded, 4 failed.</p>
+    </div>
+    <div class="card" style="min-width:240px;">
+      <div class="summary">
+        <div class="stat"><strong>16</strong>Models tested</div>
+        <div class="stat"><strong>12</strong>OK</div>
+        <div class="stat"><strong>4</strong>Errors</div>
+        <div class="stat"><strong>722ms</strong>Avg latency</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Model Metadata</h2>
+    <table>
+      <thead>
+        <tr><th>Model ID</th><th>Owned by</th><th>Category</th><th>Context</th><th>Max tokens</th></tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>meta-llama/llama-prompt-guard-2-86m</code></td>
+        <td>Meta</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>qwen/qwen3-32b</code></td>
+        <td>Alibaba Cloud</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>canopylabs/orpheus-arabic-saudi</code></td>
+        <td>Canopy Labs</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>whisper-large-v3</code></td>
+        <td>OpenAI</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>openai/gpt-oss-20b</code></td>
+        <td>OpenAI</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>openai/gpt-oss-safeguard-20b</code></td>
+        <td>OpenAI</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>allam-2-7b</code></td>
+        <td>SDAIA</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>whisper-large-v3-turbo</code></td>
+        <td>OpenAI</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>groq/compound</code></td>
+        <td>Groq</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>meta-llama/llama-prompt-guard-2-22m</code></td>
+        <td>Meta</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>llama-3.1-8b-instant</code></td>
+        <td>Meta</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>groq/compound-mini</code></td>
+        <td>Groq</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>meta-llama/llama-4-scout-17b-16e-instruct</code></td>
+        <td>Meta</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>llama-3.3-70b-versatile</code></td>
+        <td>Meta</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>canopylabs/orpheus-v1-english</code></td>
+        <td>Canopy Labs</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td><code>openai/gpt-oss-120b</code></td>
+        <td>OpenAI</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <h2>Response Results</h2>
+    <table>
+      <thead>
+          <tr><th>Model</th><th>Status</th><th>Latency</th><th>Prompt</th><th>Response</th><th>Expected</th><th>Where to use</th><th>Improvements</th><th>Stream</th><th>Chunks</th><th>Stream sample</th><th>Usage</th><th>Error</th></tr>
+        </thead>
+      <tbody>
+      <tr class="row-success">
+        <td><code>meta-llama/llama-prompt-guard-2-86m</code></td>
+        <td>success</td>
+        <td>163ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model meta-llama/llama-prompt-guard-2-86m.</td>
+        <td>0.11267497390508652</td>
+        <td>গার্ড মডেল: আউটপুট সংক্ষিপ্ত বা সংখ্যাসূচক হতে পারে (সিকিউরিটি লেয়ার)।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0,
+  &quot;prompt_tokens&quot;: 38,
+  &quot;prompt_time&quot;: 0,
+  &quot;completion_tokens&quot;: 0,
+  &quot;completion_time&quot;: 0,
+  &quot;total_tokens&quot;: 0,
+  &quot;total_time&quot;: 0
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>qwen/qwen3-32b</code></td>
+        <td>success</td>
+        <td>184ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model qwen/qwen3-32b.</td>
+        <td>&lt;think&gt;
+Okay, the user wants me to confirm that I&#39;m responding from the qwen/qwen3-32b model in one short sentence. Let me check the model name again to make</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>23</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-31c89a3d-4e22-4652-9ca9-ddc55c18e16d&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584968,&quot;model&quot;:&quot;qwen/qwen3-32b&quot;,&quot;system_fingerprint&quot;:&quot;fp_5cf921caa2&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrf9y7escrky97ys9fdd32&quot;,&quot;seed&quot;:1412052968}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-31c89a3d-4e22-4652-9ca9-ddc55c18e16d&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584968,&quot;model&quot;:&quot;qwen/qwen3-32b&quot;,&quot;system_finge</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.053797403,
+  &quot;prompt_tokens&quot;: 37,
+  &quot;prompt_time&quot;: 0.001550677,
+  &quot;completion_tokens&quot;: 40,
+  &quot;completion_time&quot;: 0.074814179,
+  &quot;total_tokens&quot;: 77,
+  &quot;total_time&quot;: 0.076364856
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-error">
+        <td><code>canopylabs/orpheus-arabic-saudi</code></td>
+        <td>error</td>
+        <td>59ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model canopylabs/orpheus-arabic-saudi.</td>
+        <td></td>
+        <td>প্রাতিষ্ঠানিকভাবে একটি সংক্ষিপ্ত উত্তর বা ব্যাখ্যা প্রত্যাশিত ছিল, কিন্তু ত্রুটি ঘটেছে।</td>
+        <td>জেনেরিক টেক্সট প্রসেসিং ও প্রোটোটাইপিং; প্রম্পট টিউনিং ব্যবহার করুন।</td>
+        <td>ইনপুট স্যানিটাইজেশন, প্রম্পট স্পষ্টীকরণ এবং পুনরাবৃত্তি পরীক্ষা করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td></td>
+        <td>HTTP 400 Bad Request: {&quot;error&quot;:{&quot;message&quot;:&quot;400 {\&quot;error\&quot;:{\&quot;message\&quot;:\&quot;The model `canopylabs/orpheus-arabic-saudi` requires terms acceptance. Please have the org admin accept the terms at https://console.groq.com/playground?model=canopylabs%2Forpheus-arabic-saudi\&quot;,\&quot;type\&quot;:\&quot;invalid_request_error\&quot;,\&quot;code\&quot;:\&quot;model_terms_required\&quot;}}&quot;,&quot;type&quot;:&quot;invalid_request_error&quot;,&quot;code&quot;:&quot;bad_request&quot;}}</td>
+      </tr>
+      <tr class="row-error">
+        <td><code>whisper-large-v3</code></td>
+        <td>error</td>
+        <td>67ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model whisper-large-v3.</td>
+        <td></td>
+        <td>এই মডেল চ্যাট কমপ্লিশন সমর্থন করে না; অডিও ট্রান্সক্রিপশনের ফলাফল প্রত্যাশিত।</td>
+        <td>স্পিচ-টু-টেক্সট (অডিও ট্রান্সক্রিপশন) ও ভয়েস প্রসেসিং।</td>
+        <td>উন্নত অডিও ইনপুট, স্যাম্পলিং ও নোয়েজ রিডাকশন; ভাষা নির্ধারণ যোগ করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td></td>
+        <td>HTTP 400 Bad Request: {&quot;error&quot;:{&quot;message&quot;:&quot;400 {\&quot;error\&quot;:{\&quot;message\&quot;:\&quot;The model `whisper-large-v3` does not support chat completions\&quot;,\&quot;type\&quot;:\&quot;invalid_request_error\&quot;}}&quot;,&quot;type&quot;:&quot;invalid_request_error&quot;,&quot;code&quot;:&quot;bad_request&quot;}}</td>
+      </tr>
+      <tr class="row-success">
+        <td><code>openai/gpt-oss-20b</code></td>
+        <td>success</td>
+        <td>171ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model openai/gpt-oss-20b.</td>
+        <td></td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>20</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-9a19c1be-dcc7-4212-86fe-905e174d104c&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;openai/gpt-oss-20b&quot;,&quot;system_fingerprint&quot;:&quot;fp_80501ff3a1&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrfag5ew8am1jbncat0f3g&quot;,&quot;seed&quot;:1356509693}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-9a19c1be-dcc7-4212-86fe-905e174d104c&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;openai/gpt-oss-20b&quot;,&quot;syst</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.051747478,
+  &quot;prompt_tokens&quot;: 100,
+  &quot;prompt_time&quot;: 0.004968802,
+  &quot;completion_tokens&quot;: 40,
+  &quot;completion_time&quot;: 0.041666585,
+  &quot;total_tokens&quot;: 140,
+  &quot;total_time&quot;: 0.046635387,
+  &quot;completion_tokens_details&quot;: {
+    &quot;reasoning_tokens&quot;: 38
+  }
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>openai/gpt-oss-safeguard-20b</code></td>
+        <td>success</td>
+        <td>154ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model openai/gpt-oss-safeguard-20b.</td>
+        <td></td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>20</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-dc6c9ab2-4121-46e1-9f29-d21990dc1b06&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;openai/gpt-oss-safeguard-20b&quot;,&quot;system_fingerprint&quot;:&quot;fp_b5ae46a825&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrfas4evvsxyjtj541veq0&quot;,&quot;seed&quot;:1111158654}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-dc6c9ab2-4121-46e1-9f29-d21990dc1b06&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;openai/gpt-oss-</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.050456793,
+  &quot;prompt_tokens&quot;: 104,
+  &quot;prompt_time&quot;: 0.005052866,
+  &quot;completion_tokens&quot;: 40,
+  &quot;completion_time&quot;: 0.040297576,
+  &quot;total_tokens&quot;: 144,
+  &quot;total_time&quot;: 0.045350442,
+  &quot;completion_tokens_details&quot;: {
+    &quot;reasoning_tokens&quot;: 38
+  }
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>allam-2-7b</code></td>
+        <td>success</td>
+        <td>139ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model allam-2-7b.</td>
+        <td>As model AI Assistant developed by the National Center for AI (NCAI), I am responding from the allam-2-7b version, ready to provide assistance and engage in meaningful conversations with</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>আঞ্চলিক ভাষা মডেল—লোকালাইজড অ্যাপ্লিকেশন ও ভাষাগত কাজ।</td>
+        <td>ইনপুট স্যানিটাইজেশন, প্রম্পট স্পষ্টীকরণ এবং পুনরাবৃত্তি পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>23</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-22da208e-0cd5-4c92-919b-1b43ff3c8e84&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;allam-2-7b&quot;,&quot;system_fingerprint&quot;:&quot;fp_ff744b2c7a&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrfb1few88rtqmppaawjza&quot;,&quot;seed&quot;:173287901}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-22da208e-0cd5-4c92-919b-1b43ff3c8e84&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584969,&quot;model&quot;:&quot;allam-2-7b&quot;,&quot;system_fingerprint&quot;:&quot;</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.049661965,
+  &quot;prompt_tokens&quot;: 34,
+  &quot;prompt_time&quot;: 0.001556265,
+  &quot;completion_tokens&quot;: 40,
+  &quot;completion_time&quot;: 0.028522105,
+  &quot;total_tokens&quot;: 74,
+  &quot;total_time&quot;: 0.03007837
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-error">
+        <td><code>whisper-large-v3-turbo</code></td>
+        <td>error</td>
+        <td>55ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model whisper-large-v3-turbo.</td>
+        <td></td>
+        <td>এই মডেল চ্যাট কমপ্লিশন সমর্থন করে না; অডিও ট্রান্সক্রিপশনের ফলাফল প্রত্যাশিত।</td>
+        <td>স্পিচ-টু-টেক্সট (অডিও ট্রান্সক্রিপশন) ও ভয়েস প্রসেসিং।</td>
+        <td>উন্নত অডিও ইনপুট, স্যাম্পলিং ও নোয়েজ রিডাকশন; ভাষা নির্ধারণ যোগ করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td></td>
+        <td>HTTP 400 Bad Request: {&quot;error&quot;:{&quot;message&quot;:&quot;400 {\&quot;error\&quot;:{\&quot;message\&quot;:\&quot;The model `whisper-large-v3-turbo` does not support chat completions\&quot;,\&quot;type\&quot;:\&quot;invalid_request_error\&quot;}}&quot;,&quot;type&quot;:&quot;invalid_request_error&quot;,&quot;code&quot;:&quot;bad_request&quot;}}</td>
+      </tr>
+      <tr class="row-success">
+        <td><code>groq/compound</code></td>
+        <td>success</td>
+        <td>881ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model groq/compound.</td>
+        <td>I am responding from model groq/compound.</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>লো-ল্যাটেন্সি সার্ভিস, রিয়েলটাইম উত্তরের জন্য উপযোগী।</td>
+        <td>বহু রিকোয়ারমেন্টে টেস্ট করুন; ব্যালান্সড টেম্পারেচার এবং কনটেক্সট প্রয়োগ করুন।</td>
+        <td>yes</td>
+        <td>1</td>
+        <td><pre>data: [DONE]
+
+</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.189696,
+  &quot;prompt_tokens&quot;: 983,
+  &quot;prompt_time&quot;: 0.042002,
+  &quot;completion_tokens&quot;: 271,
+  &quot;completion_time&quot;: 0.585836,
+  &quot;total_tokens&quot;: 1254,
+  &quot;total_time&quot;: 0.627839
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>meta-llama/llama-prompt-guard-2-22m</code></td>
+        <td>success</td>
+        <td>139ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model meta-llama/llama-prompt-guard-2-22m.</td>
+        <td>0.007272475864738226</td>
+        <td>গার্ড মডেল: আউটপুট সংক্ষিপ্ত বা সংখ্যাসূচক হতে পারে (সিকিউরিটি লেয়ার)।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0,
+  &quot;prompt_tokens&quot;: 38,
+  &quot;prompt_time&quot;: 0,
+  &quot;completion_tokens&quot;: 0,
+  &quot;completion_time&quot;: 0,
+  &quot;total_tokens&quot;: 0,
+  &quot;total_time&quot;: 0
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>llama-3.1-8b-instant</code></td>
+        <td>success</td>
+        <td>145ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model llama-3.1-8b-instant.</td>
+        <td>I&#39;m responding as model llama-3.1-8b-instant, a cutting-edge language model.</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>8</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-6da481fa-f369-4960-8e42-8aa03710a74c&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584974,&quot;model&quot;:&quot;llama-3.1-8b-instant&quot;,&quot;system_fingerprint&quot;:&quot;fp_4387d3edbb&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrffgjewct75jyn0sfgjy4&quot;,&quot;seed&quot;:2143651405}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-6da481fa-f369-4960-8e42-8aa03710a74c&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584974,&quot;model&quot;:&quot;llama-3.1-8b-instant&quot;,&quot;</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.054275333,
+  &quot;prompt_tokens&quot;: 65,
+  &quot;prompt_time&quot;: 0.003643777,
+  &quot;completion_tokens&quot;: 23,
+  &quot;completion_time&quot;: 0.031434574,
+  &quot;total_tokens&quot;: 88,
+  &quot;total_time&quot;: 0.035078351
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>groq/compound-mini</code></td>
+        <td>success</td>
+        <td>8825ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model groq/compound-mini.</td>
+        <td>I’m responding from the groq/compound-mini model.</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>লো-ল্যাটেন্সি সার্ভিস, রিয়েলটাইম উত্তরের জন্য উপযোগী।</td>
+        <td>বহু রিকোয়ারমেন্টে টেস্ট করুন; ব্যালান্সড টেম্পারেচার এবং কনটেক্সট প্রয়োগ করুন।</td>
+        <td>yes</td>
+        <td>12</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-6decaa5e-3456-46dd-8026-9d8186cbb5a1&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584983,&quot;model&quot;:&quot;groq/compound-mini&quot;,&quot;system_fingerprint&quot;:null,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;reasoning&quot;:&quot;Token&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}]}
+
+data: {&quot;id&quot;:&quot;chatcmpl-f3de44ef-5501-4409-83a3-f7eb9ecb03b2&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584983,&quot;model&quot;:&quot;groq/compound-mini&quot;,&quot;system_fingerprint&quot;:null,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;reasoning&quot;:&quot;ized&quot;},&quot;logprobs&quot;:null,&quot;f</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.107256,
+  &quot;prompt_tokens&quot;: 485,
+  &quot;prompt_time&quot;: 0.023148,
+  &quot;completion_tokens&quot;: 55,
+  &quot;completion_time&quot;: 0.115356,
+  &quot;total_tokens&quot;: 540,
+  &quot;total_time&quot;: 0.138504
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>meta-llama/llama-4-scout-17b-16e-instruct</code></td>
+        <td>success</td>
+        <td>167ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model meta-llama/llama-4-scout-17b-16e-instruct.</td>
+        <td>I am responding from model meta-llama/llama-4-scout-17b-16e-instruct.</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>8</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-ffd90ada-05f5-41ed-900c-dd2a37f915ba&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584985,&quot;model&quot;:&quot;meta-llama/llama-4-scout-17b-16e-instruct&quot;,&quot;system_fingerprint&quot;:&quot;fp_37da608fc1&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrftsvesha3x61s5a70899&quot;,&quot;seed&quot;:1239898593}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-ffd90ada-05f5-41ed-900c-dd2a37f915ba&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584985,&quot;model&quot;:&quot;me</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.05307256,
+  &quot;prompt_tokens&quot;: 49,
+  &quot;prompt_time&quot;: 0.000392919,
+  &quot;completion_tokens&quot;: 26,
+  &quot;completion_time&quot;: 0.059775814,
+  &quot;total_tokens&quot;: 75,
+  &quot;total_time&quot;: 0.060168733
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-success">
+        <td><code>llama-3.3-70b-versatile</code></td>
+        <td>success</td>
+        <td>155ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model llama-3.3-70b-versatile.</td>
+        <td>I am responding from model llama-3.3-70b-versatile.</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>6</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-904b17b2-fd76-4285-8a16-5d32ece0ef20&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584986,&quot;model&quot;:&quot;llama-3.3-70b-versatile&quot;,&quot;system_fingerprint&quot;:&quot;fp_dae98b5ecb&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrfv3fesh99dfvks4327jn&quot;,&quot;seed&quot;:1282315905}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-904b17b2-fd76-4285-8a16-5d32ece0ef20&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584986,&quot;model&quot;:&quot;llama-3.3-70b-versat</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.055223788,
+  &quot;prompt_tokens&quot;: 65,
+  &quot;prompt_time&quot;: 0.002437942,
+  &quot;completion_tokens&quot;: 17,
+  &quot;completion_time&quot;: 0.047758103,
+  &quot;total_tokens&quot;: 82,
+  &quot;total_time&quot;: 0.050196045
+}</pre></td>
+        <td></td>
+      </tr>
+      <tr class="row-error">
+        <td><code>canopylabs/orpheus-v1-english</code></td>
+        <td>error</td>
+        <td>58ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model canopylabs/orpheus-v1-english.</td>
+        <td></td>
+        <td>প্রাতিষ্ঠানিকভাবে একটি সংক্ষিপ্ত উত্তর বা ব্যাখ্যা প্রত্যাশিত ছিল, কিন্তু ত্রুটি ঘটেছে।</td>
+        <td>জেনেরিক টেক্সট প্রসেসিং ও প্রোটোটাইপিং; প্রম্পট টিউনিং ব্যবহার করুন।</td>
+        <td>ইনপুট স্যানিটাইজেশন, প্রম্পট স্পষ্টীকরণ এবং পুনরাবৃত্তি পরীক্ষা করুন।</td>
+        <td>no</td>
+        <td>0</td>
+        <td></td>
+        <td></td>
+        <td>HTTP 400 Bad Request: {&quot;error&quot;:{&quot;message&quot;:&quot;400 {\&quot;error\&quot;:{\&quot;message\&quot;:\&quot;The model `canopylabs/orpheus-v1-english` requires terms acceptance. Please have the org admin accept the terms at https://console.groq.com/playground?model=canopylabs%2Forpheus-v1-english\&quot;,\&quot;type\&quot;:\&quot;invalid_request_error\&quot;,\&quot;code\&quot;:\&quot;model_terms_required\&quot;}}&quot;,&quot;type&quot;:&quot;invalid_request_error&quot;,&quot;code&quot;:&quot;bad_request&quot;}}</td>
+      </tr>
+      <tr class="row-success">
+        <td><code>openai/gpt-oss-120b</code></td>
+        <td>success</td>
+        <td>197ms</td>
+        <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model openai/gpt-oss-120b.</td>
+        <td>I’m responding from the</td>
+        <td>সংক্ষিপ্ত, প্রাসঙ্গিক টেক্সট রেসপন্স প্রত্যাশিত।</td>
+        <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+        <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+        <td>yes</td>
+        <td>20</td>
+        <td><pre>data: {&quot;id&quot;:&quot;chatcmpl-8b2d2323-b99a-47de-b50b-813919660f97&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584987,&quot;model&quot;:&quot;openai/gpt-oss-120b&quot;,&quot;system_fingerprint&quot;:&quot;fp_e10890e4b9&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;&quot;},&quot;logprobs&quot;:null,&quot;finish_reason&quot;:null}],&quot;x_groq&quot;:{&quot;id&quot;:&quot;req_01ksbrfwjdesj8wz60be53745e&quot;,&quot;seed&quot;:1542586312}}
+
+data: {&quot;id&quot;:&quot;chatcmpl-8b2d2323-b99a-47de-b50b-813919660f97&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1779584987,&quot;model&quot;:&quot;openai/gpt-oss-120b&quot;,&quot;sy</pre></td>
+        <td><pre>{
+  &quot;queue_time&quot;: 0.051054722,
+  &quot;prompt_tokens&quot;: 100,
+  &quot;prompt_time&quot;: 0.003767958,
+  &quot;completion_tokens&quot;: 40,
+  &quot;completion_time&quot;: 0.082670568,
+  &quot;total_tokens&quot;: 140,
+  &quot;total_time&quot;: 0.086438526,
+  &quot;completion_tokens_details&quot;: {
+    &quot;reasoning_tokens&quot;: 27
+  }
+}</pre></td>
+        <td></td>
+      </tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

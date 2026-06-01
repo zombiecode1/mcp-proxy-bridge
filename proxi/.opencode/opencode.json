@@ -1,0 +1,102 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "proxi-bridge/llama-3.3-70b-versatile",
+  "small_model": "proxi-bridge/llama-3.1-8b-instant",
+  "default_agent": "zombie-coder",
+
+  "provider": {
+    "proxi-bridge": {
+      "name": "proxi-bridge",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://localhost:5001/v1",
+        "timeout": 120000
+      },
+      "models": {
+        "llama-3.3-70b-versatile": {
+          "name": "llama-3.3-70b-versatile",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "meta-llama/llama-4-scout-17b-16e-instruct": {
+          "name": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "llama-3.1-8b-instant": {
+          "name": "llama-3.1-8b-instant",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "qwen/qwen3-32b": {
+          "name": "qwen/qwen3-32b",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "openai/gpt-oss-120b": {
+          "name": "openai/gpt-oss-120b",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "openai/gpt-oss-20b": {
+          "name": "openai/gpt-oss-20b",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "allam-2-7b": {
+          "name": "allam-2-7b",
+          "tool_call": true,
+          "reasoning": false
+        },
+        "groq/compound": {
+          "name": "groq/compound",
+          "tool_call": false,
+          "reasoning": false,
+          "note": "Groq docs: compound models support built-in tools only, not local/remote tool calling"
+        },
+        "groq/compound-mini": {
+          "name": "groq/compound-mini",
+          "tool_call": false,
+          "reasoning": false,
+          "note": "Groq docs: compound models support built-in tools only, not local/remote tool calling"
+        }
+      }
+    }
+  },
+
+  "mcp": {
+    "mcp-agent-server": {
+      "type": "remote",
+      "url": "http://localhost:3000/mcp",
+      "enabled": true,
+      "description": "OpenAI-compatible MCP Agent Server with agent execution, session verification, and health checks"
+    }
+  },
+
+  "agent": {
+    "zombie-coder": {
+      "model": "proxi-bridge/llama-3.3-70b-versatile",
+      "mode": "primary",
+      "description": "ZombieCoder agent with RAG, identity anchoring, and smart model routing via the proxi-bridge on localhost:5001",
+      "permission": {
+        "edit": "allow",
+        "bash": "ask",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow"
+      }
+    },
+    "zombie-explorer": {
+      "model": "proxi-bridge/qwen/qwen3-32b",
+      "mode": "subagent",
+      "description": "Fast code exploration subagent powered by qwen3-32b on proxi-bridge",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow"
+      },
+      "prompt": "You are a fast code exploration subagent powered by qwen3-32b through the proxi bridge. Quickly search and analyze codebases. Be concise."
+    }
+  }
+}

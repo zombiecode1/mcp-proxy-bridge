@@ -1,0 +1,26 @@
+{
+  "name": "mcp-agent-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server with OpenAI-compatible agent execution — works with any OpenAI-compatible proxy",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node server.ts",
+    "client": "ts-node client.ts"
+  },
+  "dependencies": {
+    "@langchain/core": "latest",
+    "@langchain/openai": "latest",
+    "dotenv": "^16.4.5",
+    "langchain": "^1.4.2",
+    "mcp-use": "^1.1.8",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

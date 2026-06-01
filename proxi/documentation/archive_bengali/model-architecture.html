@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মডেল আর্কিটেকচার — Groq Bridge</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:#0d1117;color:#c9d1d9;padding:30px;line-height:1.8}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:2rem;color:#58a6ff;margin-bottom:8px;border-bottom:2px solid #21262d;padding-bottom:12px}
+h2{font-size:1.4rem;color:#58a6ff;margin:32px 0 16px;padding-left:12px;border-left:3px solid #58a6ff}
+h3{font-size:1.1rem;color:#c9d1d9;margin:24px 0 12px}
+p{color:#b0b8c4;margin-bottom:16px;text-align:justify}
+.code{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:16px 0;font-family:'Consolas','Courier New',monospace;font-size:.9rem;color:#7ee787;overflow-x:auto}
+.note{background:#0d2b45;border:1px solid #1f6feb;border-radius:8px;padding:16px;margin:16px 0;color:#c9d1d9}
+.note strong{color:#58a6ff}
+.warn{background:#3d1f00;border:1px solid #d29922;border-radius:8px;padding:16px;margin:16px 0;color:#c9d1d9}
+.warn strong{color:#d29922}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px;margin:16px 0}
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:.75rem;font-weight:600;margin:2px}
+.badge-fast{background:#0e4429;color:#3fb950}
+.badge-balanced{background:#0d2b45;color:#58a6ff}
+.badge-vision{background:#271052;color:#bc8cff}
+.badge-audio{background:#1f3a3a;color:#56d4dd}
+.badge-embedding{background:#1a1f3a;color:#7788ff}
+.badge-guard{background:#3d0d0d;color:#ff7b72}
+.badge-other{background:#21262d;color:#8b949e}
+.badge-code{background:#1f3a1f;color:#7ee787}
+svg{width:100%;max-width:1000px;height:auto;margin:20px auto;display:block;border-radius:8px}
+.flow-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin:24px 0}
+.flow-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 20px;text-align:center;min-width:110px;flex:1}
+.flow-box .title{font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px}
+.flow-box .value{font-size:1rem;font-weight:600;margin-top:4px}
+.flow-arrow{color:#30363d;font-size:1.5rem;padding:0 4px}
+.flag{display:inline-block;padding:2px 10px;border-radius:4px;font-family:monospace;font-size:.85rem;margin:2px}
+.flag-green{background:#0e4429;color:#3fb950;border:1px solid #3fb950}
+.flag-yellow{background:#3d1f00;color:#d29922;border:1px solid #d29922}
+.flag-red{background:#3d0d0d;color:#ff7b72;border:1px solid #ff7b72}
+.flag-blue{background:#0d2b45;color:#58a6ff;border:1px solid #58a6ff}
+.flag-purple{background:#271052;color:#bc8cff;border:1px solid #bc8cff}
+ul,ol{color:#b0b8c4;margin:12px 0 12px 24px}
+li{margin:8px 0}
+.tag{display:inline-block;background:#21262d;padding:2px 8px;border-radius:4px;font-size:.8rem;color:#8b949e;font-family:monospace}
+.highlight{background:#1f6feb33;padding:2px 6px;border-radius:4px;color:#58a6ff;font-weight:600}
+@media(max-width:768px){body{padding:16px}.flow-row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🔄 Groq Bridge — মডেল রাউটিং আর্কিটেকচার</h1>
+<p style="font-size:1.1rem;color:#8b949e;margin-top:4px">
+যেখানে কোড ও কথা বলে — ZombieCoder ইকোসিস্টেম
+</p>
+
+<!-- ===== SECTION 1: মূল চিত্র ===== -->
+<h2>১. সিস্টেম ওভারভিউ: কী ঘটছে ভেতরে?</h2>
+
+<p>
+আপনার ব্রিজটি যখন একটি request পায়, তখন সেটি শুধু "একটা মডেলে পাঠিয়ে দিচ্ছে" না — বরং একটি <span class="highlight">বুদ্ধিমান রাউটিং পাইপলাইন</span> এর মধ্য দিয়ে যাচ্ছে। নিচের চিত্রটি দেখায় ইউজারের ইনপুট থেকে শুরু করে মডেল রেসপন্স পর্যন্ত পুরো পথ:
+</p>
+
+<svg viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#58a6ff"/>
+    </marker>
+    <marker id="arrowDim" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#30363d"/>
+    </marker>
+    <linearGradient id="gBox" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c2128"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1000" height="360" fill="none"/>
+
+  <!-- User -->
+  <rect x="30" y="130" width="100" height="60" rx="8" fill="url(#gBox)" stroke="#58a6ff" stroke-width="2"/>
+  <text x="80" y="158" text-anchor="middle" fill="#c9d1d9" font-size="13" font-weight="600">ইউজার</text>
+  <text x="80" y="175" text-anchor="middle" fill="#8b949e" font-size="10">POST /chat</text>
+
+  <!-- Arrow 1 -->
+  <line x1="130" y1="160" x2="190" y2="160" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Router (মাওলানা) -->
+  <rect x="195" y="105" width="130" height="110" rx="10" fill="url(#gBox)" stroke="#d29922" stroke-width="2"/>
+  <text x="260" y="135" text-anchor="middle" fill="#d29922" font-size="12" font-weight="600">🌟 রাউটার</text>
+  <text x="260" y="152" text-anchor="middle" fill="#c9d1d9" font-size="11">"মাওলানা"</text>
+  <text x="260" y="170" text-anchor="middle" fill="#8b949e" font-size="9">model নির্বাচন</text>
+  <text x="260" y="185" text-anchor="middle" fill="#8b949e" font-size="9">rate limit চেক</text>
+  <text x="260" y="200" text-anchor="middle" fill="#8b949e" font-size="9">context window চেক</text>
+
+  <!-- Arrow 2 down -->
+  <line x1="260" y1="215" x2="260" y2="270" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Model Pool -->
+  <rect x="70" y="275" width="380" height="75" rx="8" fill="url(#gBox)" stroke="#30363d" stroke-width="1" stroke-dasharray="4"/>
+
+  <rect x="85" y="285" width="78" height="28" rx="5" fill="#0e4429" stroke="#3fb950" stroke-width="1"/>
+  <text x="124" y="303" text-anchor="middle" fill="#3fb950" font-size="8">⚡ fast</text>
+
+  <rect x="170" y="285" width="78" height="28" rx="5" fill="#0d2b45" stroke="#58a6ff" stroke-width="1"/>
+  <text x="209" y="303" text-anchor="middle" fill="#58a6ff" font-size="8">⚖️ balanced</text>
+
+  <rect x="255" y="285" width="78" height="28" rx="5" fill="#271052" stroke="#bc8cff" stroke-width="1"/>
+  <text x="294" y="303" text-anchor="middle" fill="#bc8cff" font-size="8">👁️ vision</text>
+
+  <rect x="340" y="285" width="78" height="28" rx="5" fill="#3d0d0d" stroke="#ff7b72" stroke-width="1"/>
+  <text x="379" y="303" text-anchor="middle" fill="#ff7b72" font-size="8">🛡️ guard</text>
+
+  <rect x="85" y="318" width="78" height="20" rx="4" fill="#1f3a3a" stroke="#56d4dd" stroke-width="1"/>
+  <text x="124" y="332" text-anchor="middle" fill="#56d4dd" font-size="7">🎤 audio</text>
+
+  <rect x="170" y="318" width="78" height="20" rx="4" fill="#1a1f3a" stroke="#7788ff" stroke-width="1"/>
+  <text x="209" y="332" text-anchor="middle" fill="#7788ff" font-size="7">📊 embedding</text>
+
+  <rect x="255" y="318" width="78" height="20" rx="4" fill="#1f3a1f" stroke="#7ee787" stroke-width="1"/>
+  <text x="294" y="332" text-anchor="middle" fill="#7ee787" font-size="7">💻 code</text>
+
+  <!-- Line from router up to Groq provider -->
+  <line x1="390" y1="160" x2="540" y2="160" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Groq Provider -->
+  <rect x="545" y="115" width="130" height="90" rx="10" fill="url(#gBox)" stroke="#3fb950" stroke-width="2"/>
+  <text x="610" y="145" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="600">☁️ Groq API</text>
+  <text x="610" y="165" text-anchor="middle" fill="#8b949e" font-size="9">মডেল এক্সিকিউশন</text>
+  <text x="610" y="182" text-anchor="middle" fill="#8b949e" font-size="9">rate limit প্রযোজ্য</text>
+  <text x="610" y="196" text-anchor="middle" fill="#8b949e" font-size="9">context window প্রযোজ্য</text>
+
+  <!-- Arrow back down to response handler -->
+  <line x1="675" y1="160" x2="770" y2="160" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Response Handler -->
+  <rect x="775" y="115" width="110" height="90" rx="10" fill="url(#gBox)" stroke="#bc8cff" stroke-width="2"/>
+  <text x="830" y="145" text-anchor="middle" fill="#bc8cff" font-size="11" font-weight="600">🔄 প্রসেসর</text>
+  <text x="830" y="165" text-anchor="middle" fill="#8b949e" font-size="9">flag পার্স</text>
+  <text x="830" y="182" text-anchor="middle" fill="#8b949e" font-size="9">রেসপন্স ফরম্যাট</text>
+  <text x="830" y="196" text-anchor="middle" fill="#8b949e" font-size="9">execution route</text>
+
+  <!-- Arrow to user -->
+  <line x1="885" y1="160" x2="960" y2="160" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- User response -->
+  <rect x="900" y="130" width="65" height="60" rx="8" fill="url(#gBox)" stroke="#3fb950" stroke-width="2"/>
+  <text x="932" y="158" text-anchor="middle" fill="#c9d1d9" font-size="13" font-weight="600">ইউজার</text>
+  <text x="932" y="175" text-anchor="middle" fill="#8b949e" font-size="10">রেসপন্স</text>
+
+  <!-- Labels -->
+  <text x="260" y="98" text-anchor="middle" fill="#8b949e" font-size="10">① Request Entry</text>
+  <text x="610" y="108" text-anchor="middle" fill="#8b949e" font-size="10">② API Call</text>
+  <text x="830" y="108" text-anchor="middle" fill="#8b949e" font-size="10">③ Response Processing</text>
+
+  <!-- Flag indicator -->
+  <rect x="780" y="250" width="100" height="55" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1" stroke-dasharray="3"/>
+  <text x="830" y="268" text-anchor="middle" fill="#d29922" font-size="9" font-weight="600">🚩 model flag</text>
+  <text x="830" y="283" text-anchor="middle" fill="#8b949e" font-size="8">type: "chat"</text>
+  <text x="830" y="296" text-anchor="middle" fill="#8b949e" font-size="8">execute: false</text>
+</svg>
+
+<div class="note">
+<strong>🔑 মূল কথা:</strong> ইউজার একটি request পাঠালে, তা সরাসরি Groq-এ না গিয়ে প্রথমে <strong>Router (মাওলানা)</strong>-এর কাছে যায়। Router মডেল নির্বাচন, rate limit চেক, context window যাচাই — সবকিছু পরীক্ষা করে। তারপর Groq-এ পাঠায়। Groq থেকে রেসপন্স এলে <strong>প্রসেসর</strong> সেটি পার্স করে, flag দেখে সিদ্ধান্ত নেয় রেসপন্সটি কিভাবে ইউজারকে দিতে হবে।
+</div>
+
+<!-- ===== SECTION 2: মডেল ক্যাটাগরি ===== -->
+<h2>২. মডেল ক্যাটাগরি: কে কী করে?</h2>
+
+<p>
+Groq-এর প্রতিটি মডেলের একটি <span class="highlight">category</span> আছে যা বলে দেয় মডেলটি কী ধরনের কাজের জন্য তৈরি। আপনি যখন ভুল মডেল বেছে নেন, তখনই সমস্যা হয় — যেমন <span class="badge badge-guard">guard</span> মডেল দিয়ে chat করার চেষ্টা করলে Groq error দেয়।
+</p>
+
+<div class="card">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+
+<div style="background:#0e4429;border-radius:8px;padding:16px;border:1px solid #3fb950">
+<div style="color:#3fb950;font-weight:600;font-size:.9rem">⚡ Fast — ছোট, দ্রুত প্রশ্ন</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> llama3-8b, gemma-7b, llama-3.2-1b/3b<br>
+<strong>ব্যবহার:</strong> ছোট উত্তর, quick chat<br>
+<strong>context:</strong> 8K<br>
+<strong>streaming:</strong> ✅ support করে<br>
+<strong>Cost:</strong> খুব কম
+</div>
+</div>
+
+<div style="background:#0d2b45;border-radius:8px;padding:16px;border:1px solid #58a6ff">
+<div style="color:#58a6ff;font-weight:600;font-size:.9rem">⚖️ Balanced — জটিল কাজ</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> llama3-70b, mixtral-8x7b (32K), llama-3.3-70b<br>
+<strong>ব্যবহার:</strong> কোড, বিশ্লেষণ, বড় উত্তর<br>
+<strong>context:</strong> 8K–32K<br>
+<strong>streaming:</strong> ✅ support করে<br>
+<strong>Cost:</strong> মাঝারি
+</div>
+</div>
+
+<div style="background:#271052;border-radius:8px;padding:16px;border:1px solid #bc8cff">
+<div style="color:#bc8cff;font-weight:600;font-size:.9rem">👁️ Vision — ছবি বোঝে</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> llama-3.2-11b-vision, 90b-vision<br>
+<strong>ব্যবহার:</strong> image analysis, OCR<br>
+<strong>context:</strong> 8K<br>
+<strong>streaming:</strong> ✅ support করে<br>
+<strong>Cost:</strong> বেশি
+</div>
+</div>
+
+<div style="background:#3d0d0d;border-radius:8px;padding:16px;border:1px solid #ff7b72">
+<div style="color:#ff7b72;font-weight:600;font-size:.9rem">🛡️ Guard — সুরক্ষা, মডারেশন</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> llama-guard-3-8b<br>
+<strong>ব্যবহার:</strong> content safety check<br>
+<strong>context:</strong> 8K<br>
+<strong>streaming:</strong> ❌ support করে <span class="highlight">না</span><br>
+<strong>chat:</strong> ❌ support করে <span class="highlight">না</span>
+</div>
+</div>
+
+<div style="background:#1f3a3a;border-radius:8px;padding:16px;border:1px solid #56d4dd">
+<div style="color:#56d4dd;font-weight:600;font-size:.9rem">🎤 Audio — speech-to-text</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> whisper-large-v3, v3-turbo<br>
+<strong>ব্যবহার:</strong> audio transcription/translation<br>
+<strong>streaming:</strong> ❌ (না, file-based)<br>
+<strong>chat:</strong> ❌
+</div>
+</div>
+
+<div style="background:#1a1f3a;border-radius:8px;padding:16px;border:1px solid #7788ff">
+<div style="color:#7788ff;font-weight:600;font-size:.9rem">📊 Embedding — vector search</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>মডেল:</strong> nomic-embed-text-v1_5<br>
+<strong>ব্যবহার:</strong> text → vector conversion<br>
+<strong>streaming:</strong> ❌<br>
+<strong>chat:</strong> ❌
+</div>
+</div>
+
+<div style="background:#1f3a1f;border-radius:8px;padding:16px;border:1px solid #7ee787">
+<div style="color:#7ee787;font-weight:600;font-size:.9rem">💻 Code Execution — (প্রস্তাবিত)</div>
+<div style="color:#b0b8c4;font-size:.85rem;margin-top:8px">
+<strong>ধারণা:</strong> মডেল রেসপন্সের সাথে flag পাঠায়<br>
+<strong>flag: "execute"</strong> → কোড রান হবে<br>
+<strong>flag: "display"</strong> → শুধু দেখাবে<br>
+<strong>streaming:</strong> ✅
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="warn">
+<strong>⚠️ গুরুত্বপূর্ণ:</strong> আপনি যখন <span class="badge badge-guard">guard</span> ক্যাটাগরির মডেলে <code>stream: true</code> সহ chat request পাঠান, তখন Groq 400 error দেয় "text classification models do not support streaming"। কারণ guard মডেল chat-এর জন্য তৈরি <strong>ই নয়</strong> — এটি শুধু content moderation করে। আমাদের ব্রিজ এখন <span class="highlight">স্বয়ংক্রিয়ভাবে</span> এই মডেলগুলোকে suitable chat model-এ route করে দেয়।
+</div>
+
+<!-- ===== SECTION 3: FLAG সিস্টেম ===== -->
+<h2>৩. ফ্ল্যাগ সিস্টেম: মডেল যখন "বলে" কী করতে হবে</h2>
+
+<p>
+আপনার ধারণাটি অত্যন্ত গুরুত্বপূর্ণ। আপনি বলছেন — মডেল যেন শুধু <strong>টেক্সট রেসপন্স</strong> না পাঠায়, বরং রেসপন্সের সাথে একটি <span class="highlight">flag</span> (নির্দেশক) পাঠায় যাতে প্রসেসর বুঝতে পারে এই রেসপন্স নিয়ে কী করতে হবে। এটাকেই আমরা বলি <strong>structured output with intent</strong>।
+</p>
+
+<p>একটি মডেলের রেসপন্স এরকম দেখতে পারে:</p>
+
+<div class="code">
+{
+  "content": "এটি একটি পাইথন ফাংশন যা fibonacci সিরিজ জেনারেট করে...",
+  "flags": {
+    "type": "code",            ← এটি কোড
+    "language": "python",       ← পাইথন কোড
+    "execute": true,           ← নিরাপদ环境中 executable
+    "safety": "safe",          ← সেফটি চেক পাস করেছে
+    "model": "llama-3.3-70b"   ← কোন মডেল দিয়েছে
+  },
+  "code": "def fib(n): ..."    ← executable কোড ব্লক
+}
+</div>
+
+<h3>ফ্ল্যাগের প্রকারভেদ (প্রস্তাবিত)</h3>
+
+<table style="width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0">
+<tr style="border-bottom:2px solid #30363d">
+<th style="text-align:left;padding:10px;color:#8b949e">Flag</th>
+<th style="text-align:left;padding:10px;color:#8b949e">মান</th>
+<th style="text-align:left;padding:10px;color:#8b949e">অর্থ</th>
+<th style="text-align:left;padding:10px;color:#8b949e">প্রসেসর কী করবে</th>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-green">type: "chat"</span></td>
+<td style="padding:10px">সাধারণ কথোপকথন</td>
+<td style="padding:10px">মডেল স্বাভাবিক উত্তর দিয়েছে</td>
+<td style="padding:10px">রেসপন্স সরাসরি ইউজারকে দেখাবে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-blue">type: "code"</span></td>
+<td style="padding:10px">কোড জেনারেশন</td>
+<td style="padding:10px">মডেল কোড লিখেছে</td>
+<td style="padding:10px">syntax highlight করে দেখাবে; execute flag থাকলে রান করবে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-yellow">type: "tool"</span></td>
+<td style="padding:10px">টুল কল</td>
+<td style="padding:10px">মডেল কোন টুল ব্যবহার করতে চায়</td>
+<td style="padding:10px">টুল এক্সিকিউট করবে, রেজাল্ট মডেলে ফেরত দেবে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-red">type: "error"</span></td>
+<td style="padding:10px">এরর বা লিমিট</td>
+<td style="padding:10px">মডেল কাজ করতে পারেনি</td>
+<td style="padding:10px">এরর মেসেজ দেখাবে, fallback মডেল চেষ্টা করবে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-green">execute: true</span></td>
+<td style="padding:10px">নিরাপদ এক্সিকিউশন</td>
+<td style="padding:10px">কোড sandbox-এ রান করা যাবে</td>
+<td style="padding:10px">isolated environment-এ কোড রান করাবে, আউটপুট দেখাবে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px"><span class="flag flag-purple">safety: "unsafe"</span></td>
+<td style="padding:10px">ঝুঁকিপূর্ণ</td>
+<td style="padding:10px">মডেল বলছে এটি নিরাপদ নয়</td>
+<td style="padding:10px">guard মডেল দিয়ে re-check করবে, user confirmation নেবে</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>🧠 আপনার "মাথার চুল ধরে টানার" উদাহরণটি:</strong> আপনি ঠিকই বলেছেন। মডেল যদি রেসপন্সের সাথে একটি flag পাঠায় <code>type: "wakeup", target: "big-pickle"</code>, তাহলে প্রসেসর বুঝতে পারে — "ওহ! এই রেসপন্সটি বিগ-পিকলকে জাগানোর জন্য।" প্রসেসর তখন একটি নির্দিষ্ট execution path-এ চলে যায় (যেমন: টার্মিনালে কমান্ড রান করা, API কল করা, ইত্যাদি)। মডেলটি "মাথার চুল ধরে টানছে" অর্থাৎ <strong>একটি ট্রিগার পাঠাচ্ছে</strong> যা প্রসেসরকে অ্যাকশন নিতে নির্দেশ দিচ্ছে।
+</div>
+
+<!-- ===== SECTION 4: মাওলানা রাউটার ===== -->
+<h2>৪. 🌟 মাওলানা রাউটার: তুমি বলবে কোন মডেল, আমি বুঝে দেব</h2>
+
+<p>
+আপনার "মাওলানা মডেল" ধারণাটি — একজন মধ্যস্থ ব্যক্তি যে ইউজারের ইনপুট বুঝে সঠিক মডেলে রুট করে — এটি একটি <span class="highlight">বুদ্ধিমান অর্কেস্ট্রেটর</span>। বর্তমান Groq Bridge এই কাজটি আংশিকভাবে করে (auto-select), কিন্তু আপনার দর্শন আরও গভীর:
+</p>
+
+<div class="flow-row">
+<div class="flow-box" style="border-color:#58a6ff">
+<div class="title">ইউজার</div>
+<div class="value">ইনপুট + মডেল পছন্দ</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="border-color:#d29922">
+<div class="title">🌟 মাওলানা</div>
+<div class="value">Router / Selector</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="border-color:#3fb950">
+<div class="title">☁️ Groq</div>
+<div class="value">নির্দিষ্ট মডেল</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="border-color:#bc8cff">
+<div class="title">🔄 প্রসেসর</div>
+<div class="value">Flag → Execution</div>
+</div>
+</div>
+
+<h3>মাওলানা রাউটার যা করে (প্রস্তাবিত আর্কিটেকচার):</h3>
+
+<ol>
+<li><strong>ইনপুট বিশ্লেষণ:</strong> ইউজার কি চায়? কোড? গল্প? ছবি বিশ্লেষণ? audio transcribe?</li>
+<li><strong>মডেল নির্বাচন:</strong> ইনপুট + ইউজারের বলা category অনুযায়ী সঠিক মডেল বেছে নেয়। ইউজার যদি "code" বলে, তাহলে code-capable মডেলে রুট করে।</li>
+<li><strong>Limit চেক:</strong> Groq-এর rate limit আর context window-এর মধ্যে পড়ে কিনা যাচাই করে।</li>
+<li><strong>Fallback প্ল্যান:</strong> যদি একটি মডেল কাজ না করে (error দেয়), তাহলে অন্য মডেল চেষ্টা করে।</li>
+<li><strong>Moderation:</strong> guard মডেল দিয়ে ইনপুট চেক করিয়ে দেয় (হালকা, ফ্রি মডেলে)।</li>
+<li><strong>Routing:</strong> নির্ধারিত মডেলে request পাঠায় এবং রেসপন্স প্রসেসরের কাছে দেয়।</li>
+</ol>
+
+<div class="code">
+// মাওলানা রাউটারের কনসেপ্ট
+function mawlanaRouter(input, preferredCategory) {
+  // 1. ইনপুট বিশ্লেষণ
+  const category = preferredCategory || detectCategory(input);
+
+  // 2. ক্যাটাগরি অনুযায়ী মডেল পুল
+  const modelPool = {
+    chat: ['llama-3.3-70b-versatile', 'llama3-8b-8192'],
+    code: ['mixtral-8x7b-32768', 'llama-3.3-70b-versatile'],
+    vision: ['llama-3.2-11b-vision-preview'],
+    audio: ['whisper-large-v3'],
+    guard: ['llama-guard-3-8b'] // শুধু moderation এর জন্য
+  };
+
+  // 3. সিলেক্ট করা মডেল
+  let selected = modelPool[category][0];
+
+  // 4. limit চেক
+  if (exceedsContextWindow(input, selected)) {
+    selected = findLargerContextModel(category);
+  }
+  if (isRateLimited(selected)) {
+    throw new Error('Rate limit exceeded, try later');
+  }
+
+  // 5. Groq-এ পাঠাও
+  return groqCreateChat({ model: selected, messages: input });
+}
+</div>
+
+<!-- ===== SECTION 5: Limit হ্যান্ডলিং ===== -->
+<h2>৫. লিমিট হ্যান্ডলিং: প্রোভাইডারের বেড়া চিনে চলা</h2>
+
+<p>
+Groq-এর প্রতিটি মডেলের জন্য আলাদা <span class="highlight">rate limit</span> এবং <span class="highlight">context window</span> আছে। আপনার ব্রিজটি এখন এই লিমিটগুলো চেক করে, কিন্তু আরও কিছু করা দরকার:
+</p>
+
+<div class="card">
+<h3>বর্তমান অবস্থা:</h3>
+<ul>
+<li>✅ <strong>Rate limit tracking:</strong> প্রতি মডেলের RPM/TPM ট্র্যাক করা হয়</li>
+<li>✅ <strong>Context window check:</strong> ← এইমাত্র যোগ করা হয়েছে</li>
+<li>✅ <strong>Guard model auto-routing:</strong> ← এইমাত্র যোগ করা হয়েছে</li>
+<li>❌ <strong>Smart fallback:</strong> যদি rate limit hits, তখন auto-switch করে না</li>
+<li>❌ <strong>Queue system:</strong> অনেক request এলে queue করে না</li>
+<li>❌ <strong>Context-aware model upgrade:</strong> বড় context লাগলে auto upgrade করে না</li>
+</ul>
+</div>
+
+<h3>প্রস্তাবিত Limit Management:</h3>
+
+<table style="width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0">
+<tr style="border-bottom:2px solid #30363d">
+<th style="text-align:left;padding:10px;color:#8b949e">Limit Type</th>
+<th style="text-align:left;padding:10px;color:#8b949e">বর্তমান</th>
+<th style="text-align:left;padding:10px;color:#8b949e">প্রস্তাবিত</th>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">RPM (request per minute)</td>
+<td style="padding:10px;color:#3fb950">✅ ট্র্যাক + reject</td>
+<td style="padding:10px;color:#d29922">+ auto-route to same-category model</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">TPM (token per minute)</td>
+<td style="padding:10px;color:#3fb950">✅ ট্র্যাক + reject</td>
+<td style="padding:10px;color:#d29922">+ queue with delay</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Context window</td>
+<td style="padding:10px;color:#3fb950">✅ এখন চেক করা হয়</td>
+<td style="padding:10px;color:#d29922">+ auto-upgrade to 32K (mixtral) if exceeds</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Free tier quota</td>
+<td style="padding:10px;color:#f85149">❌ নেই</td>
+<td style="padding:10px;color:#d29922">+ quota tracking + auto-pause</td>
+</tr>
+</table>
+
+<!-- ===== SECTION 6: ফ্রি মডেল চেকার ===== -->
+<h2>৬. ফ্রি মডেল চেকার: "যত খুশি তত ব্যবহার করো" মডেল দিয়ে প্রি-চেক</h2>
+
+<p>
+আপনার গুরুত্বপূর্ণ একটি প্রস্তাব: <span class="highlight">ছোট, ফ্রি মডেলগুলো</span> দিয়ে একটি চেকার লেয়ার তৈরি করা। Groq-এর ছোট মডেলগুলো (যেমন <code>llama3-8b-8192</code>, <code>gemma-7b-it</code>) খুব দ্রুত এবং প্রচুর limit আছে। এগুলো দিয়ে আমরা <strong>প্রি-প্রসেসিং</strong> করতে পারি:
+</p>
+
+<div class="flow-row">
+<div class="flow-box" style="border-color:#3fb950;min-width:150px">
+<div class="title">① ইনপুট</div>
+<div class="value" style="font-size:.8rem">ইউজারের মেসেজ</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="border-color:#d29922;min-width:150px">
+<div class="title">🔍 ফ্রি চেকার</div>
+<div class="value" style="font-size:.8rem">llama3-8b / gemma-7b</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="border-color:#58a6ff;min-width:150px">
+<div class="title">🎯 মেইন মডেল</div>
+<div class="value" style="font-size:.8rem">llama-3.3-70b / mixtral</div>
+</div>
+</div>
+
+<h3>ফ্রি চেকার যা করতে পারে:</h3>
+<ul>
+<li><strong>🔹 ইনপুট ক্লাসিফিকেশন:</strong> "এই ইনপুটটি কী টাইপের — chat, code, vision?" — ছোট মডেল বুঝে ফেলে, তারপর বড় মডেলে রুট করে</li>
+<li><strong>🔹 সেফটি প্রি-স্ক্রিন:</strong> guard মডেলের কাজ ছোট মডেল দিয়ে আগেই করে ফেলা — ইনপুটে কোন ক্ষতিকর কিছু আছে কিনা</li>
+<li><strong>🔹 টোকেন এস্টিমেশন:</strong> "এই মেসেজটি কত tokens নেবে? কোন মডেলে ফিট করবে?" — ছোট মডেল দিয়ে হিসাব</li>
+<li><strong>🔹 Intent Detection:</strong> "ইউজার কি চায়? কোড লিখতে? নাকি শুধু জানতে চায়?" — তারপর appropriate model-এ পাঠানো</li>
+<li><strong>🔹 Summarization:</strong> বড় কনভার্সেশন থাকলে, ছোট মডেল দিয়ে summary বানিয়ে বড় মডেলে পাঠানো</li>
+</ul>
+
+<div class="note">
+<strong>💰 কেন এই পদ্ধতি কার্যকর?</strong> ছোট মডেলগুলো (যেমন <code>llama3-8b-8192</code>) Groq-এ <strong>৩০ RPM</strong> এবং <strong>৩০K TPM</strong> limit দিয়ে ফ্রি। বড় মডেলগুলোর limit অনেক কম (যেমন <code>mixtral</code>: ৫K TPM)। ছোট মডেল দিয়ে প্রি-চেক করলে বড় মডেলের limit বাঁচে, এবং ইউজার <span class="highlight">ভুল মডেল বেছে নিলেও</span> চেকার সেটি ধরে ফেলে এবং সঠিক মডেলে route করে দেয়।
+</div>
+
+<!-- ===== SECTION 7: 512MB টার্গেট ===== -->
+<h2>৭. ৫১২এমবি টার্গেট: কারও কম্পিউটার খারাপ নয়</h2>
+
+<p>
+আপনার কথাগুলো অত্যন্ত গুরুত্বপূর্ণ — <em>"যত কম রিসোর্সে, যত ছোট মডেলে, কারো মনে কোন দুঃখ না থাকে যে আমার কম্পিউটারটা ভালো না।"</em> এই ব্রিজটি ইতিমধ্যেই হালকা (Express.js + TypeScript), কিন্তু আরও অপ্টিমাইজ করা যায়:
+</p>
+
+<div class="card">
+<table style="width:100%;border-collapse:collapse;font-size:.85rem">
+<tr style="border-bottom:2px solid #30363d">
+<th style="text-align:left;padding:10px;color:#8b949e">কম্পোনেন্ট</th>
+<th style="text-align:left;padding:10px;color:#8b949e">বর্তমান মেমরি</th>
+<th style="text-align:left;padding:10px;color:#8b949e">৫১২এমবি টার্গেট</th>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Node.js রানটাইম</td>
+<td style="padding:10px">~40 MB</td>
+<td style="padding:10px">✅ OK</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Express.js সার্ভার</td>
+<td style="padding:10px">~15 MB</td>
+<td style="padding:10px">✅ OK</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Logs (in-memory)</td>
+<td style="padding:10px">~1 MB (1000 entries)</td>
+<td style="padding:10px">✅ OK, file-based backup</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Rate limit counters</td>
+<td style="padding:10px">~0.1 MB</td>
+<td style="padding:10px">✅ OK</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Model list cache</td>
+<td style="padding:10px">~0.05 MB</td>
+<td style="padding:10px">✅ OK</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Dashboard HTML</td>
+<td style="padding:10px">~0.05 MB</td>
+<td style="padding:10px">✅ OK</td>
+</tr>
+<tr>
+<td style="padding:10px"><strong>Total (estimated)</strong></td>
+<td style="padding:10px"><strong>~60 MB</strong></td>
+<td style="padding:10px;color:#3fb950"><strong>✅ ৫১২এমবিতে আরামে চলবে</strong></td>
+</tr>
+</table>
+</div>
+
+<p>
+৫১২MB RAM-এ এই ব্রিজটি আরামে চলবে। বর্তমান মেমরি ব্যবহার ~60MB, যা ৫১২MB-র <span class="highlight">১২%</span> মাত্র। তাই কেউ মনে করবে না তার কম্পিউটার ভালো না — কারণ এই ব্রিজটি <strong>সব কম্পিউটারেই</strong> ভালো চলে।
+</p>
+
+<!-- ===== SECTION 8: কনক্লুশন ===== -->
+<h2>৮. উপসংহার: আপনার দৃষ্টিকোণ থেকে সমাধানের পথ</h2>
+
+<p>
+আপনি যা বলেছেন, তার সারমর্ম হলো:
+</p>
+
+<div class="card" style="border-left:4px solid #d29922">
+<p style="font-style:italic;color:#c9d1d9;margin:0">
+"ইউজার বসে একটি মাওলানা মডেল সিলেক্ট করে। ইউজারের ইনপুটকে বিবেচনা করে নির্দিষ্ট ফরমেটের মডেলের কাছে দৌড় দেবে — আর কান্নাকাটি নেই। মন চাইলে মন দেব, দেহ চাইলে দেহ — শুধু মডেল সিলেক্ট করো। কোড চাইলে কোড এক্সিকিউশন করবে, কথা চাইলে কথা বলবে। সব রহিম ভাই — অর্থাৎ রাউটার।"
+</p>
+</div>
+
+<h3>আপনার দৃষ্টিকোণ থেকে কী করা দরকার (সংক্ষেপে):</h3>
+
+<table style="width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0">
+<tr style="border-bottom:2px solid #30363d">
+<th style="text-align:left;padding:10px;color:#8b949e">সমস্যা</th>
+<th style="text-align:left;padding:10px;color:#8b949e">আপনার সমাধান</th>
+<th style="text-align:left;padding:10px;color:#8b949e">বর্তমান অবস্থা</th>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">ভুল মডেলে request চলে যাচ্ছে</td>
+<td style="padding:10px">মাওলানা রাউটার — মডেল সিলেকশন + ক্যাটাগরি ভ্যালিডেশন</td>
+<td style="padding:10px;color:#3fb950">✅ guard auto-routing যোগ করা হয়েছে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Context window exceeded</td>
+<td style="padding:10px">প্রি-ভ্যালিডেশন + বড় মডেলে auto-upgrade</td>
+<td style="padding:10px;color:#3fb950">✅ context window চেক যোগ করা হয়েছে</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">Rate limit hit</td>
+<td style="padding:10px">Tracking + queue + fallback</td>
+<td style="padding:10px;color:#d29922">🔄 ট্র্যাকিং আছে, fallback বাকি</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">কোড এক্সিকিউশন</td>
+<td style="padding:10px">Flag-based execution routing</td>
+<td style="padding:10px;color:#f85149">❌ এখনো বাস্তবায়িত নয়</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">কম রিসোর্স</td>
+<td style="padding:10px">৫১২MB target, হালকা আর্কিটেকচার</td>
+<td style="padding:10px;color:#3fb950">✅ ইতিমধ্যেই ~60MB</td>
+</tr>
+<tr style="border-bottom:1px solid #21262d">
+<td style="padding:10px">মডেল কনফিউশন</td>
+<td style="padding:10px">ক্যাটাগরি-based UI + clear labeling</td>
+<td style="padding:10px;color:#d29922">🔄 dashboard-এ category দেখায়, আরও উন্নতি প্রয়োজন</td>
+</tr>
+<tr>
+<td style="padding:10px">ফ্রি মডেল দিয়ে চেকিং</td>
+<td style="padding:10px">ছোট মডেল (llama3-8b) দিয়ে pre-processing</td>
+<td style="padding:10px;color:#f85149">❌ এখনো বাস্তবায়িত নয়</td>
+</tr>
+</table>
+
+<div class="note" style="border-left:4px solid #58a6ff">
+<strong>🧠 চূড়ান্ত মন্তব্য:</strong> আপনার দৃষ্টিকোণটি আসলে একটি <strong>ইন্টেলিজেন্ট অর্কেস্ট্রেশন লেয়ার</strong>-এর দিকে ইঙ্গিত করছে — যেখানে ব্রিজটি শুধু একটি pass-through proxy না, বরং একটি <strong>বুদ্ধিমান মধ্যস্থতাকারী</strong> যে বুঝে, ফিল্টার করে, রুট করে, এবং রেসপন্সকে প্রয়োজনমতো প্রসেস করে। আপনি যে "মাথার চুল ধরে টানার" উদাহরণ দিয়েছেন — সেটি হলো <strong>intent-based response flagging</strong> যেখানে মডেলের রেসপন্স শুধু টেক্সট নয়, বরং একটি <strong>ইনস্ট্রাকশন সেট</strong> যা প্রসেসর বুঝতে পারে এবং Action নেয়। এটি ঠিক তেমনই যেভাবে একজন সিনিয়র ডেভেলপার জুনিয়রকে বলে না "কোড লিখো" — বরং বলে "এটা রিফ্যাক্টর করো, ইউনিট টেস্ট যোগ করো, এবং সিআই পাইপলাইন আপডেট করো" — অর্থাৎ নির্দেশ + প্রত্যাশিত ফলাফল। এই ব্রিজটি এখন সেই পথেই এগোচ্ছে।
+</div>
+
+<hr style="border-color:#30363d;margin:40px 0">
+
+<p style="text-align:center;color:#8b949e;font-size:.85rem">
+ZombieCoder — যেখানে কোড ও কথা বলে | Groq Unified Bridge v2.0<br>
+ডকুমেন্টেশন আপডেট: মে ২০২৬
+</p>
+
+</div>
+</body>
+</html>

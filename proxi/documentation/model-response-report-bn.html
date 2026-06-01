@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Groq মডেল রিপোর্ট</title>
+    <style>
+        body {
+            background: #0b1220;
+            color: #e6edf3;
+            font-family: Inter, system-ui, sans-serif;
+            margin: 0;
+            padding: 24px;
+        }
+
+        h1,
+        h2 {
+            margin: 0 0 12px 0;
+        }
+
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #273147;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .25);
+        }
+
+        .summary {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .stat {
+            padding: 16px;
+            border-radius: 14px;
+            background: #141c2f;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 1.9rem;
+            line-height: 1;
+            margin-bottom: 4px;
+            color: #58a6ff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1f283d;
+            vertical-align: top;
+        }
+
+        th {
+            background: #121a2d;
+            color: #8fa4bf;
+            font-size: .85rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        tr.row-error td {
+            color: #ffb3b3;
+        }
+
+        tr.row-success td {
+            color: #e6edf3;
+        }
+
+        code {
+            font-family: source-code-pro, monospace;
+            background: #172136;
+            padding: 4px 6px;
+            border-radius: 6px;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: .82rem;
+            background: #101623;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero">
+        <div>
+            <h1>Groq মডেল রেসপন্স রিপোর্ট</h1>
+            <p><code>http://localhost:5001</code> থেকে তৈরি হয়েছে 2026-05-24T01:09:47.860Z তারিখে।</p>
+            <p>16টি মডেল পরীক্ষা করা হয়েছে, 12টি সফল, 4টি ত্রুটিপূর্ণ।</p>
+        </div>
+        <div class="card" style="min-width:240px;">
+            <div class="summary">
+                <div class="stat"><strong>16</strong>মডেল</div>
+                <div class="stat"><strong>12</strong>সফল</div>
+                <div class="stat"><strong>4</strong>ত্রুটি</div>
+                <div class="stat"><strong>722ms</strong>গড় ল্যাটেন্সি</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>মডেল মেটাডেটা</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>মডেল আইডি</th>
+                    <th>মালিক</th>
+                    <th>ক্যাটাগরি</th>
+                    <th>কনটেক্সট</th>
+                    <th>ম্যাক্স টোকেন</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>meta-llama/llama-prompt-guard-2-86m</code></td>
+                    <td>Meta</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>qwen/qwen3-32b</code></td>
+                    <td>Alibaba Cloud</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>canopylabs/orpheus-arabic-saudi</code></td>
+                    <td>Canopy Labs</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>whisper-large-v3</code></td>
+                    <td>OpenAI</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>openai/gpt-oss-20b</code></td>
+                    <td>OpenAI</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>openai/gpt-oss-safeguard-20b</code></td>
+                    <td>OpenAI</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>allam-2-7b</code></td>
+                    <td>SDAIA</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>whisper-large-v3-turbo</code></td>
+                    <td>OpenAI</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>groq/compound</code></td>
+                    <td>Groq</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>meta-llama/llama-prompt-guard-2-22m</code></td>
+                    <td>Meta</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>llama-3.1-8b-instant</code></td>
+                    <td>Meta</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>groq/compound-mini</code></td>
+                    <td>Groq</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>meta-llama/llama-4-scout-17b-16e-instruct</code></td>
+                    <td>Meta</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>llama-3.3-70b-versatile</code></td>
+                    <td>Meta</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>canopylabs/orpheus-v1-english</code></td>
+                    <td>Canopy Labs</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+                <tr>
+                    <td><code>openai/gpt-oss-120b</code></td>
+                    <td>OpenAI</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                    <td>ন/এ</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+        <h2>ফলাফলের বিবরণ</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>মডেল</th>
+                    <th>স্ট্যাটাস</th>
+                    <th>সময়</th>
+                    <th>প্রম্পট</th>
+                    <th>প্রতিক্রিয়া</th>
+                    <th>কি হওয়া উচিত</th>
+                    <th>কোথায় ব্যবহার</th>
+                    <th>উন্নতির পরামর্শ</th>
+                    <th>স্ট্রিম</th>
+                    <th>চাঙ্ক</th>
+                    <th>স্ট্রিম স্যাম্পল</th>
+                    <th>ইউসেজ</th>
+                    <th>ত্রুটি</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row-success">
+                    <td><code>meta-llama/llama-prompt-guard-2-86m</code></td>
+                    <td>সফল</td>
+                    <td>163ms</td>
+                    <td>You are a helpful assistant. In one short sentence, tell me that you are responding from model
+                        meta-llama/llama-prompt-guard-2-86m.</td>
+                    <td>0.11267497390508652</td>
+                    <td>গার্ড মডেল: আউটপুট সংক্ষিপ্ত বা সংখ্যাসূচক হতে পারে (সিকিউরিটি লেয়ার)।</td>
+                    <td>চ্যাটবট, টেক্সট জেনারেশন, সারাংশ ও সহায়ক অ্যাপ্লিকেশন।</td>
+                    <td>প্রম্পট টিউনিং, কনটেক্সট বাড়ানো, রেট লিমিট ও টোকেন ব্যবস্থাপনা পরীক্ষা করুন।</td>
+                    <td>না</td>
+                    <td>0</td>
+                    <td></td>
+                    <td>
+                        <pre>{
+  &quot;queue_time&quot;: 0,
+  &quot;prompt_tokens&quot;: 38,
+  &quot;prompt_time&quot;: 0,
+  &quot;completion_tokens&quot;: 0,
+  &quot;completion_time&quot;: 0,
+  &quot;total_tokens&quot;: 0,
+  &quot;total_time&quot;: 0
+}</pre>
+                    </td>
+                    <td></td>
+                </tr>
+                <!-- content archived -->
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
