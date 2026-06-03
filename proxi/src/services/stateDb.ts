@@ -532,7 +532,7 @@ export function addWriteLogWithHash(db: StateDb, entry: {
     entry.old_hash || null, entry.new_hash || null, entry.source_url || null);
 }
 
-export function verifyWriteLogEntry(db: StateDb, logId: number): any {
+export async function verifyWriteLogEntry(db: StateDb, logId: number): Promise<any> {
   const entry = db.prepare(`SELECT * FROM write_log WHERE id = ?`).get(logId) as any;
   if (!entry) return { entry: null, computed_hash: null, matches: false };
 

@@ -1,9 +1,9 @@
 import "./config.js";
-import { MCPServer, text, error, oauthProxy, FileSystemSessionStore } from "mcp-use/server";
+import { MCPServer, text, error, FileSystemSessionStore } from "mcp-use/server";
 import { z } from "zod";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
-import { timingSafeEqual } from "node:crypto";
+import { timingSafeEqual, randomUUID } from "node:crypto";
 import { jwtVerify, SignJWT } from "jose";
 import { config } from "./config.js";
 import { runAgent } from "./agent.js";
@@ -29,40 +29,111 @@ function corsMiddleware() {
   };
 }
 
-// ─── SSE Bearer auth middleware ───────────────────────────────────────────────
+// ─── OAuth 2.1 self-contained (PKCE authorization_code + client_credentials) ──
 
 let _secretKey: Uint8Array | null = null;
 
-function sseAuthMiddleware() {
+interface AuthCodeStore {
+  code: string;
+  codeChallenge: string;
+  codeChallengeMethod: string;
+  redirectUri: string;
+  clientId: string;
+  scope: string;
+  expiresAt: number;
+}
+const authCodes = new Map<string, AuthCodeStore>();
+
+function getPublicUrl(c?: any): string {
+  const pub = config.mcpPublicUrl;
+  if (pub) return pub;
+  if (!c) return `http://${config.serverHost}:${config.serverPort}`;
+  const proto = c.req.header("X-Forwarded-Proto") || "http";
+  const host = c.req.header("Host") || `${config.serverHost}:${config.serverPort}`;
+  return `${proto}://${host}`;
+}
+
+async function verifyJwt(token: string) {
+  if (!_secretKey) throw new Error("Secret key not initialized");
+  return jwtVerify(token, _secretKey, { issuer: "mcp-agent-server" });
+}
+
+async function signJwt(payload: Record<string, unknown>, expiresIn = "1h"): Promise<string> {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuer("mcp-agent-server")
+    .setExpirationTime(expiresIn)
+    .sign(_secretKey!);
+}
+
+async function parseBody(c: any): Promise<Record<string, string>> {
+  const body: Record<string, string> = {};
+  const ct = (c.req.header("Content-Type") || "").toLowerCase();
+  if (ct.includes("json")) {
+    try { return await c.req.json(); } catch { return body; }
+  }
+  const text = await c.req.text().catch(() => "");
+  if (text) {
+    for (const [k, v] of new URLSearchParams(text)) body[k] = v;
+  }
+  return body;
+}
+
+if (config.mcpOauthSecret) {
+  _secretKey = new TextEncoder().encode(config.mcpOauthSecret);
+}
+
+// ─── Rate limiter (in-memory sliding window) ──────────────────────────────────
+
+const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function rateLimitMiddleware(maxRequests = 100, windowMs = 60000) {
   return async (c: any, next: any) => {
-    if (c.req.method === "HEAD" || c.req.method === "POST") return next();
+    const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || c.req.header("x-real-ip") || "unknown";
+    const now = Date.now();
+    const windowKey = Math.floor(now / windowMs);
+    const key = `${ip}:${windowKey}`;
+    const entry = rateLimitBuckets.get(key);
+    if (entry) {
+      if (entry.count >= maxRequests) {
+        c.header("Retry-After", String(Math.ceil((entry.resetAt - now) / 1000)));
+        return c.json({ error: "rate_limit_exceeded", message: `Max ${maxRequests} requests per ${windowMs / 1000}s` }, 429);
+      }
+      entry.count++;
+    } else {
+      rateLimitBuckets.set(key, { count: 1, resetAt: now + windowMs });
+    }
+    await next();
+  };
+}
+
+// ─── Bearer auth middleware (for /mcp/* and /sse/*) ────────────────────────────
+
+function bearerAuthMiddleware() {
+  return async (c: any, next: any) => {
+    if (!_secretKey) return next();
+    if (c.req.method === "HEAD" || (c.req.method === "POST" && c.req.path.startsWith("/sse"))) return next();
 
     const authHeader = c.req.header("Authorization");
     if (!authHeader) {
       c.header("WWW-Authenticate", 'Bearer error="unauthorized"');
       return c.json({ error: "Missing Authorization header" }, 401);
     }
-
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer" || !parts[1]) {
       c.header("WWW-Authenticate", 'Bearer error="invalid_request"');
       return c.json({ error: "Invalid Authorization header format" }, 401);
     }
-
     try {
-      if (!_secretKey) {
-        c.header("WWW-Authenticate", 'Bearer error="server_error"');
-        return c.json({ error: "Server not configured for authentication" }, 500);
-      }
-      const { payload } = await jwtVerify(parts[1], _secretKey, {
-        issuer: "mcp-agent-server",
-      });
+      const { payload } = await verifyJwt(parts[1]);
       const user = {
         userId: (payload.sub as string) || "anonymous",
         email: (payload.email as string) || undefined,
         name: (payload.name as string) || undefined,
       };
-      c.set("auth", { user, payload, accessToken: parts[1], scopes: [], permissions: [] });
+      const scope = (payload.scope as string) || "";
+      const authInfo = { user, payload, accessToken: parts[1], scopes: scope.split(" "), permissions: [] };
+      c.set("auth", authInfo);
       c.set("user", user);
       c.set("payload", payload);
       c.set("accessToken", parts[1]);
@@ -72,39 +143,6 @@ function sseAuthMiddleware() {
       return c.json({ error: `Invalid token: ${(e as Error).message}` }, 401);
     }
   };
-}
-
-// ─── OAuth 2.1 (optional) ─────────────────────────────────────────────────────
-
-let oauthConfig = undefined;
-if (config.mcpOauthSecret) {
-  _secretKey = new TextEncoder().encode(config.mcpOauthSecret);
-  const publicUrl = config.mcpPublicUrl || `http://${config.serverHost}:${config.serverPort}`;
-
-  oauthConfig = oauthProxy({
-    issuer: "mcp-agent-server",
-    authEndpoint: `${publicUrl}/authorize`,
-    tokenEndpoint: `${publicUrl}/token`,
-    clientId: "mcp-agent-server",
-    clientSecret: config.mcpOauthSecret,
-    scopes: ["openid", "profile", "tools:*"],
-
-    async verifyToken(token: string) {
-      if (!_secretKey) throw new Error("Secret key not initialized");
-      const { payload } = await jwtVerify(token, _secretKey, {
-        issuer: "mcp-agent-server",
-      });
-      return { payload: payload as Record<string, unknown> };
-    },
-
-    getUserInfo(payload) {
-      return {
-        userId: (payload.sub as string) || "anonymous",
-        email: (payload.email as string) || undefined,
-        name: (payload.name as string) || undefined,
-      };
-    },
-  });
 }
 
 // ─── Server ──────────────────────────────────────────────────────────────────
@@ -119,67 +157,156 @@ const server = new MCPServer({
   sessionStore: new FileSystemSessionStore({
     path: ".mcp-use/sessions.json",
   }),
-  ...(oauthConfig ? { oauth: oauthConfig } : {}),
 });
 
-// ─── SSE + CORS middleware (only when OAuth is enabled) ───────────────────────
-// Registered BEFORE listen() so they apply before internal route mounting.
+// ─── Register auth-related middleware & routes ─────────────────────────────────
 
-if (oauthConfig) {
+if (config.mcpOauthSecret) {
+  // CORS on all auth paths
   server.use("/mcp/*", corsMiddleware());
   server.use("/sse/*", corsMiddleware());
-  server.use("/sse/*", sseAuthMiddleware());
+  server.use("/.well-known/*", corsMiddleware());
+  server.use("/auth/*", corsMiddleware());
+  server.use("/authorize", corsMiddleware());
 
+  // Rate limiting
+  server.use("/auth/*", rateLimitMiddleware(30, 60000));
+  server.use("/mcp/*", rateLimitMiddleware(300, 60000));
+  server.use("/sse/*", rateLimitMiddleware(100, 60000));
+
+  // Bearer auth
+  server.use("/mcp/*", bearerAuthMiddleware());
+  server.use("/sse/*", bearerAuthMiddleware());
+
+  // ── OAuth metadata ──
+  server.get("/.well-known/oauth-authorization-server", async (c: any) => {
+    const base = getPublicUrl(c);
+    return c.json({
+      issuer: "mcp-agent-server",
+      authorization_endpoint: `${base}/authorize`,
+      token_endpoint: `${base}/auth/token`,
+      registration_endpoint: `${base}/auth/register`,
+      token_endpoint_auth_methods_supported: ["client_secret_post", "client_secret_basic", "none"],
+      response_types_supported: ["code"],
+      grant_types_supported: ["authorization_code", "client_credentials"],
+      code_challenge_methods_supported: ["S256", "plain"],
+      scopes_supported: ["openid", "profile", "tools:*"],
+    });
+  });
+
+  // ── Authorize endpoint (auto-approve with PKCE) ──
+  const handleAuthorize = async (c: any) => {
+    const params = c.req.method === "POST" ? await c.req.parseBody() : c.req.query();
+    const { redirect_uri, response_type, code_challenge, code_challenge_method, state, scope, client_id } = params;
+
+    if (!redirect_uri || !response_type || !code_challenge || !client_id) {
+      const base = getPublicUrl(c);
+      return c.html(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>MCP Agent Server — Authorize</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;line-height:1.6}
+pre{background:#f5f5f5;padding:12px;border-radius:6px;overflow-x:auto}code{font-size:14px}
+.btn{display:inline-block;padding:10px 20px;background:#0052cc;color:#fff;text-decoration:none;border-radius:6px;font-weight:600}</style>
+</head><body>
+<h1>MCP Agent Server</h1>
+<p>This server supports the <strong>client_credentials</strong> OAuth grant.</p>
+<p>Get a token:</p>
+<pre><code>curl -s -X POST ${base}/auth/token \\
+  -H "Content-Type: application/json" \\
+  -d '{"client_id":"mcp-agent-server","client_secret":"'${config.mcpOauthSecret}'","grant_type":"client_credentials"}'</code></pre>
+<p>Then use it:</p>
+<pre><code>curl -s -H "Authorization: Bearer &lt;TOKEN&gt;" ${base}/mcp</code></pre>
+</body></html>`);
+    }
+
+    if (response_type !== "code") {
+      return c.json({ error: "unsupported_response_type" }, 400);
+    }
+
+    const code = randomUUID();
+    authCodes.set(code, {
+      code,
+      codeChallenge: code_challenge,
+      codeChallengeMethod: code_challenge_method || "S256",
+      redirectUri: redirect_uri,
+      clientId: client_id,
+      scope: scope || "openid profile tools:*",
+      expiresAt: Date.now() + 120000,
+    });
+
+    const url = new URL(redirect_uri);
+    url.searchParams.set("code", code);
+    url.searchParams.set("state", state || "");
+    return c.redirect(url.toString(), 302);
+  };
+  server.get("/authorize", handleAuthorize);
+  server.post("/authorize", handleAuthorize);
+
+  // ── Token endpoint (authorization_code + client_credentials) ──
   server.post("/auth/token", async (c: any) => {
-    let body: Record<string, string> = {};
-    const ct = (c.req.header("Content-Type") || "").toLowerCase();
+    const body = await parseBody(c);
+    const grantType = body.grant_type || "";
 
-    if (ct.includes("json")) {
-      try { body = await c.req.json(); } catch { /* fall through */ }
-    } else {
-      const text = await c.req.text().catch(() => "");
-      if (text) {
-        for (const [k, v] of new URLSearchParams(text)) {
-          body[k] = v;
-        }
+    if (grantType === "authorization_code") {
+      const code = authCodes.get(body.code || "");
+      if (!code || code.expiresAt < Date.now()) {
+        authCodes.delete(body.code || "");
+        return c.json({ error: "invalid_grant", error_description: "Authorization code expired or invalid" }, 400);
+      }
+      if (code.redirectUri !== body.redirect_uri) {
+        return c.json({ error: "invalid_grant", error_description: "redirect_uri mismatch" }, 400);
+      }
+      authCodes.delete(body.code || "");
+
+      try {
+        const token = await signJwt({
+          sub: code.clientId,
+          email: `${code.clientId}@mcp.local`,
+          name: "OAuth Client",
+          scope: code.scope,
+        });
+        return c.json({ access_token: token, token_type: "Bearer", expires_in: 3600, scope: code.scope });
+      } catch (e) {
+        return c.json({ error: "server_error", error_description: "Failed to generate token" }, 500);
       }
     }
 
-    if (body.grant_type !== "client_credentials") {
-      return c.json({ error: "unsupported_grant_type", error_description: "Only client_credentials is supported" }, 400);
+    if (grantType === "client_credentials") {
+      if (!body.client_secret) {
+        return c.json({ error: "invalid_client", error_description: "Client secret required" }, 401);
+      }
+      const a = Buffer.from(body.client_secret);
+      const b = Buffer.from(config.mcpOauthSecret || "");
+      const match = a.length === b.length && timingSafeEqual(a, b);
+      if (!match) {
+        return c.json({ error: "invalid_client", error_description: "Invalid client credentials" }, 401);
+      }
+      try {
+        const token = await signJwt({
+          sub: body.client_id || "mcp-agent-server",
+          email: `${body.client_id || "cli-user"}@mcp.local`,
+          name: "CLI Client",
+          scope: body.scope || "openid profile tools:*",
+        });
+        return c.json({ access_token: token, token_type: "Bearer", expires_in: 3600, scope: body.scope || "openid profile tools:*" });
+      } catch (e) {
+        return c.json({ error: "server_error", error_description: "Failed to generate token" }, 500);
+      }
     }
 
-    if (!body.client_secret) {
-      return c.json({ error: "invalid_client", error_description: "Client secret required" }, 401);
-    }
-    const a = Buffer.from(body.client_secret);
-    const b = Buffer.from(config.mcpOauthSecret || "");
-    const match = a.length === b.length && timingSafeEqual(a, b);
-    if (!match) {
-      return c.json({ error: "invalid_client", error_description: "Invalid client credentials" }, 401);
-    }
+    return c.json({ error: "unsupported_grant_type", error_description: "Supported grants: authorization_code, client_credentials" }, 400);
+  });
 
-    try {
-      const token = await new SignJWT({
-        sub: body.client_id || "mcp-agent-server",
-        email: `${body.client_id || "cli-user"}@mcp.local`,
-        name: "CLI Client",
-        scope: body.scope || "openid profile tools:*",
-      })
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuer("mcp-agent-server")
-        .setExpirationTime("1h")
-        .sign(_secretKey!); // safe: only reached when _secretKey is initialized
-
-      return c.json({
-        access_token: token,
-        token_type: "Bearer",
-        expires_in: 3600,
-        scope: body.scope || "openid profile tools:*",
-      });
-    } catch (e) {
-      return c.json({ error: "server_error", error_description: "Failed to generate token" }, 500);
-    }
+  // ── Register endpoint (for dynamic client registration) ──
+  server.post("/auth/register", async (c: any) => {
+    const body = await c.req.json().catch(() => ({}));
+    return c.json({
+      client_id: "mcp-agent-server",
+      client_name: body.client_name || "MCP Client",
+      redirect_uris: body.redirect_uris || [],
+      grant_types: ["authorization_code", "client_credentials"],
+      response_types: ["code"],
+      token_endpoint_auth_method: "none",
+    }, 201);
   });
 }
 
@@ -208,10 +335,11 @@ async function writeRuntimeManifest(): Promise<void> {
     updatedAt: new Date().toISOString(),
   };
 
-  if (oauthConfig) {
+  if (config.mcpOauthSecret) {
     manifest.auth = {
       tokenUrl: `${publicUrl}/auth/token`,
-      type: "client_credentials",
+      authorizeUrl: `${publicUrl}/authorize`,
+      type: "authorization_code",
       issuer: "mcp-agent-server",
     };
   }
@@ -394,7 +522,7 @@ server.tool(
     if (conversation_id) {
       const locked = await acquireConversationLock(conversation_id);
       if (!locked) {
-        await ctx.log("warn", `run_agent: could not acquire lock for saving — ${conversation_id}`);
+        await ctx.log("warning", `run_agent: could not acquire lock for saving — ${conversation_id}`);
       } else {
         try {
           const history = await loadConversation(conversation_id);
@@ -476,11 +604,13 @@ async function bootstrap() {
   console.log(`Session store     →  FileSystemSessionStore (persistent)`);
   console.log(`Runtime state     →  ${runtimeManifestPath}`);
 
-  if (oauthConfig) {
+  if (config.mcpOauthSecret) {
     console.log(`Auth              →  OAuth 2.1 enabled (Bearer JWT)`);
     console.log(`  Token endpoint  →  ${publicUrl}/auth/token`);
-    console.log(`  SSE protected   →  Bearer auth required on /sse`);
-    console.log(`  CORS enabled    →  /mcp/* + /sse/* `);
+    console.log(`  Authorize       →  ${publicUrl}/authorize`);
+    console.log(`  Rate limiting   →  /auth/* 30/min, /mcp/* + /sse/* 100/min`);
+    console.log(`  Bearer auth     →  /mcp/* + /sse/*`);
+    console.log(`  CORS enabled    →  /mcp/* + /sse/* + /.well-known/*`);
   }
 }
 

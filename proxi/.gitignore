@@ -7,3 +7,6 @@ logs/
 *.db
 *.db-shm
 *.db-wal
+.idea/
+tmp_payload.json
+*.tmp

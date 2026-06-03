@@ -181,11 +181,11 @@ export function handleWriteLogWithHash(req: Request, res: Response) {
   }
 }
 
-export function handleVerifyEntry(req: Request, res: Response) {
+export async function handleVerifyEntry(req: Request, res: Response) {
   try {
     const logId = parseInt(req.params.id);
     if (isNaN(logId)) return res.status(400).json({ error: 'invalid log id' });
-    const result = db.verifyWriteLogEntry(getDb(), logId);
+    const result = await db.verifyWriteLogEntry(getDb(), logId);
     res.json(result);
   } catch (e: any) {
     res.status(500).json({ error: e.message });

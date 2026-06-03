@@ -440,7 +440,17 @@ async function handleJsonRpcMethod(body: JsonRpcRequest, sessionIdHeader: string
         response.body = rpcError(id, -32602, 'directory is required');
         return response;
       }
-      const result = await index?.indexDirectory(path.resolve(directory), {
+      const resolvedDir = path.resolve(directory);
+      if (rag) {
+        const needsInit = !rag.hasWorkingDir || rag.currentDir !== resolvedDir;
+        const result2 = await rag.setWorkingDirectory(resolvedDir, { autoInit: needsInit ? true : undefined });
+        if (result2.needsPermission) {
+          response.statusCode = 403;
+          response.body = rpcError(id, -32001, 'Permission required', { message: rag.requestPermissionMessage('scan') });
+          return response;
+        }
+      }
+      const result = await index?.indexDirectory(resolvedDir, {
         workspaceId: args.workspace_id ? String(args.workspace_id) : undefined,
       });
       recordRuntimeEvent({
@@ -450,7 +460,7 @@ async function handleJsonRpcMethod(body: JsonRpcRequest, sessionIdHeader: string
         sessionId: sessionIdHeader || undefined,
         method,
         workspaceId: args.workspace_id ? String(args.workspace_id) : undefined,
-        directory: path.resolve(directory),
+        directory: resolvedDir,
         status: 'ok',
         details: result as any,
       });
@@ -582,7 +592,13 @@ async function handleJsonRpcMethod(body: JsonRpcRequest, sessionIdHeader: string
     }
 
     if (name === 'ssot_read') {
-      const text = rag?.readSSOT() || '';
+      let text = rag?.readSSOT() || '';
+      if (!text && rag?.hasWorkingDir) {
+        const scanResult = await rag.scanProject();
+        const template = rag.generateSSOTTemplate(scanResult);
+        rag.saveSSOT(template);
+        text = rag.readSSOT();
+      }
       recordRuntimeEvent({
         timestamp: new Date().toISOString(),
         category: 'mcp',
