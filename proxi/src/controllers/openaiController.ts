@@ -406,7 +406,7 @@ export const handleDashboard = async (req: Request, res: Response) => {
   const models = groqService.getModels();
   const logs = groqService.getLogs().slice(-200);
   const rateLimits = groqService.getRateLimits();
-  const apiKey = process.env.GROQ_API_KEY || '';
+  const apiKey = process.env.GROQ_API_KEY ? '••••••••' + (process.env.GROQ_API_KEY.slice(-4)) : '';
   const identity = getIdentity();
   const identityName = identity?.system_identity?.name || 'ZombieCoder';
   const identityOwner = identity?.system_identity?.owner || '';
@@ -598,7 +598,7 @@ export const handleDashboard = async (req: Request, res: Response) => {
     '</div>',
     '</div>',
     '<script>',
-    'var API_KEY = "' + apiKey + '";',
+    'var API_KEY = ""; // redacted from server side',
     'function toggleAutoSelect(){',
     '  fetch("/api/auto-select",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled:!document.getElementById("autoToggle").classList.contains("active")})}).then(function(r){if(r.ok)location.reload()})',
     '}',

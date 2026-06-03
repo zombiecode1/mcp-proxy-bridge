@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 — Security & Persistence | Test Proof</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 40px; }
+  h1 { color: #58a6ff; font-size: 28px; margin-bottom: 6px; }
+  .subtitle { color: #8b949e; margin-bottom: 24px; }
+  .meta { color: #8b949e; font-size: 13px; margin-bottom: 30px; }
+  .meta span { margin-right: 24px; }
+  .summary { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; }
+  .stat { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px 24px; min-width: 120px; }
+  .stat .num { font-size: 32px; font-weight: 700; }
+  .stat .label { font-size: 12px; text-transform: uppercase; color: #8b949e; letter-spacing: 1px; margin-top: 4px; }
+  .stat.pass .num { color: #3fb950; }
+  .stat.fail .num { color: #f85149; }
+  .stat.error .num { color: #d29922; }
+  .overall { font-size: 18px; font-weight: 600; padding: 12px 20px; border-radius: 8px; display: inline-block; margin-bottom: 24px; }
+  .overall.pass { background: #1b3a1f; color: #3fb950; border: 1px solid #3fb950; }
+  .overall.fail { background: #3a1b1b; color: #f85149; border: 1px solid #f85149; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #30363d; color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; font-size: 14px; }
+  tr.pass td { border-left: 3px solid #3fb950; }
+  tr.fail td { border-left: 3px solid #f85149; }
+  tr.error td { border-left: 3px solid #d29922; }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+  .badge-pass { background: #1b3a1f; color: #3fb950; }
+  .badge-fail { background: #3a1b1b; color: #f85149; }
+  .badge-error { background: #3a321b; color: #d29922; }
+  .detail-cell { max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-cell:hover { white-space: normal; overflow: visible; }
+  .features { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .features h3 { color: #58a6ff; margin-bottom: 12px; }
+  .features ul { list-style: none; }
+  .features li { padding: 4px 0; }
+  .features li::before { content: "✓ "; color: #3fb950; }
+  .version { text-align: center; color: #484f58; font-size: 12px; margin-top: 30px; }
+</style>
+</head>
+<body>
+<h1>Phase 4 — Security &amp; Persistence</h1>
+<p class="subtitle">SSE OAuth protection • CORS headers • Token issuance • Session persistence</p>
+<div class="meta">
+  <span>📅 2026-06-03T01:07:47.929Z</span>
+  <span>⏱ 0.8s</span>
+  <span>🔬 19 test cases</span>
+</div>
+
+<div class="overall pass">Overall: PASS</div>
+
+<div class="summary">
+  <div class="stat pass"><div class="num">19</div><div class="label">Passed</div></div>
+  <div class="stat fail"><div class="num">0</div><div class="label">Failed</div></div>
+  <div class="stat error"><div class="num">0</div><div class="label">Errors</div></div>
+</div>
+
+<div class="features">
+<h3>Phase 4 Features Verified</h3>
+<ul>
+  <li>SSE endpoint (/sse) protected with Bearer JWT auth</li>
+  <li>CORS headers on /mcp/* and /sse/* endpoints</li>
+  <li>/auth/token endpoint with client_credentials grant for CLI clients</li>
+  <li>FileSystemSessionStore for MCP session persistence</li>
+  <li>conversation_id support for persistent agent conversations</li>
+  <li>Runtime manifest includes auth configuration</li>
+</ul>
+</div>
+
+<table>
+<thead>
+  <tr><th>#</th><th>Category</th><th>Test</th><th>Result</th><th>Detail</th></tr>
+</thead>
+<tbody>
+<tr class="pass">
+      <td>1</td>
+      <td>Token Issuance</td>
+      <td>Valid client_credentials → JWT</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got JWT: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0LWN...</td>
+    </tr>
+<tr class="pass">
+      <td>2</td>
+      <td>Token Issuance</td>
+      <td>Invalid secret → 401</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Correctly rejected</td>
+    </tr>
+<tr class="pass">
+      <td>3</td>
+      <td>Token Issuance</td>
+      <td>Unsupported grant_type → 400</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got error: unsupported_grant_type</td>
+    </tr>
+<tr class="pass">
+      <td>4</td>
+      <td>Token Issuance</td>
+      <td>JSON content-type works</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got JWT via JSON</td>
+    </tr>
+<tr class="pass">
+      <td>5</td>
+      <td>CORS</td>
+      <td>OPTIONS /mcp → 204 + CORS</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>ACAO=*, ACM=GET,HEAD,POST,PUT,DELETE,OPTIO</td>
+    </tr>
+<tr class="pass">
+      <td>6</td>
+      <td>CORS</td>
+      <td>GET /mcp → CORS present</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>ACAO=*</td>
+    </tr>
+<tr class="pass">
+      <td>7</td>
+      <td>CORS</td>
+      <td>OPTIONS /sse → 204 + CORS</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>ACAO=*, ACM=GET,HEAD,POST,PUT,DELETE,OPTIO</td>
+    </tr>
+<tr class="pass">
+      <td>8</td>
+      <td>CORS</td>
+      <td>GET /sse → CORS present</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>ACAO=*</td>
+    </tr>
+<tr class="pass">
+      <td>9</td>
+      <td>SSE Auth</td>
+      <td>GET /sse without auth → 401</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got 401 + WWW-Authenticate: Bearer error="unauthorized"</td>
+    </tr>
+<tr class="pass">
+      <td>10</td>
+      <td>SSE Auth</td>
+      <td>GET /sse with invalid token → 401</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Correctly rejected</td>
+    </tr>
+<tr class="pass">
+      <td>11</td>
+      <td>SSE Auth</td>
+      <td>GET /sse with valid token → 200</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>SSE connection accepted</td>
+    </tr>
+<tr class="pass">
+      <td>12</td>
+      <td>SSE Auth</td>
+      <td>POST /sse without auth → not 401 (session-based)</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got 200 (expected, passes through auth)</td>
+    </tr>
+<tr class="pass">
+      <td>13</td>
+      <td>MCP Tool Call</td>
+      <td>List tools with valid token</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Found tools: verify_session, run_agent, ping_agent</td>
+    </tr>
+<tr class="pass">
+      <td>14</td>
+      <td>MCP Tool Call</td>
+      <td>ping_agent with valid auth</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Got: {"_meta":{"mimeType":"text/plain"},"content":[{"type":"text","text":"status       : OK\nbase_url     : http://localhost:</td>
+    </tr>
+<tr class="pass">
+      <td>15</td>
+      <td>MCP Tool Call</td>
+      <td>MCP call without auth → rejected</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Correctly rejected: Authentication required</td>
+    </tr>
+<tr class="pass">
+      <td>16</td>
+      <td>Session Persistence</td>
+      <td>conversation_id in run_agent schema</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Parameter present</td>
+    </tr>
+<tr class="pass">
+      <td>17</td>
+      <td>Session Persistence</td>
+      <td>FileSystemSessionStore file exists</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Found at /home/sahon/mcp/mcp/.mcp-use/sessions.json</td>
+    </tr>
+<tr class="pass">
+      <td>18</td>
+      <td>Session Persistence</td>
+      <td>Conversation sessions directory exists</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>/home/sahon/mcp/mcp/.zombiecoder/sessions</td>
+    </tr>
+<tr class="pass">
+      <td>19</td>
+      <td>Runtime Manifest</td>
+      <td>Manifest includes auth config</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>tokenUrl: https://zombiecoder.my.id/auth/token</td>
+    </tr>
+</tbody>
+</table>
+
+<div class="version">mcp-agent-server v1.0.0 • Phase 4 • SHA-256 verified</div>
+</body>
+</html>

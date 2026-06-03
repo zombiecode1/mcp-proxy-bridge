@@ -1,0 +1,56 @@
+{
+  "patch": "03-write-verification",
+  "phase": "Phase 3: Write Verification System (SHA-256 + Read-Back)",
+  "timestamp": "2026-06-03T00:04:10.582Z",
+  "tests": [
+    {
+      "name": "POST write-log with hash",
+      "status": 201,
+      "pass": true,
+      "summary": "success",
+      "data_snippet": "{\"success\":true}"
+    },
+    {
+      "name": "GET verify report",
+      "status": 200,
+      "pass": true,
+      "summary": "1/5 verified",
+      "data_snippet": "{\"total\":5,\"verified\":1,\"unverified\":4,\"failed\":0,\"entries\":[{\"id\":5,\"table_name\":\"patch-03-test\",\"record_id\":\"verify-demo\",\"action\":\"insert\",\"old_hash\":null,\"new_hash\":\"demo123\",\"verified\":0,\"source_url\":\"http://localhost:5001\",\"created_at\":\"2026-06"
+    },
+    {
+      "name": "POST verify entry (id=4 from prior test)",
+      "status": 200,
+      "pass": true,
+      "summary": "HASH MATCH ✅",
+      "data_snippet": "{\"entry\":{\"id\":4,\"table_name\":\"agent_notes\",\"record_id\":\"1\",\"action\":\"verify-test\",\"old_hash\":null,\"new_hash\":\"b5c686f73e50607a21e6593264778201f96645a1875b5a4f9c67f3b7e5f58e91\",\"verified\":1,\"source_url\":\"http://localhost:5001\",\"created_at\":\"2026-06-0"
+    },
+    {
+      "name": "POST verify-read identity",
+      "status": 200,
+      "pass": true,
+      "summary": "hash=2d53818afc1c2358...",
+      "data_snippet": "{\"verified\":true,\"current_hash\":\"2d53818afc1c2358cd3ccb20abe61cc0502917b56cec0727267c2b6da80fa825\",\"row\":{\"id\":1,\"name\":\"ZombieCoder\",\"version\":\"2.0.0\",\"tagline\":\"Phase 2 verified: SQLite + REST API active\",\"owner\":\"\",\"organization\":\"\",\"address\":\"\",\""
+    },
+    {
+      "name": "POST verify-read agent_notes",
+      "status": 200,
+      "pass": true,
+      "summary": "hash=b5c686f73e50607a...",
+      "data_snippet": "{\"verified\":true,\"current_hash\":\"b5c686f73e50607a21e6593264778201f96645a1875b5a4f9c67f3b7e5f58e91\",\"row\":{\"id\":1,\"workspace_id\":null,\"key\":\"test-note\",\"content\":\"This is a test agent note\",\"category\":\"test\",\"version\":1,\"created_at\":\"2026-06-02 18:08:"
+    }
+  ],
+  "result": "PASS",
+  "final_verification": {
+    "entry_id": 6,
+    "stored_hash": "2d53818afc1c2358cd3ccb20abe61cc0502917b56cec0727267c2b6da80fa825",
+    "computed_hash": "2d53818afc1c2358cd3ccb20abe61cc0502917b56cec0727267c2b6da80fa825",
+    "matches": true,
+    "pass": true
+  },
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": "100.0%"
+  }
+}

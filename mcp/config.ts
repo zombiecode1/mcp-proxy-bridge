@@ -54,4 +54,12 @@ export const config = {
 
   serverPort: parseInt(optional("MCP_SERVER_PORT", "3000"), 10),
   serverHost: optional("MCP_SERVER_HOST", "localhost"),
+
+  // OAuth authentication (optional — leave empty to disable)
+  mcpOauthSecret: optional("MCP_OAUTH_SECRET", ""),
+  mcpOauthIssuer: optional("MCP_OAUTH_ISSUER", ""),
+
+  // Public URL when behind Cloudflare tunnel / reverse proxy
+  // Leave empty to derive from serverHost:serverPort (dev mode)
+  mcpPublicUrl: optional("MCP_PUBLIC_URL", ""),
 };

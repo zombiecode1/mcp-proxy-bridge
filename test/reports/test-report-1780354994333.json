@@ -1,0 +1,431 @@
+{
+  "testRunId": 1780354988678,
+  "timestamp": "2026-06-01T23:03:08.678Z",
+  "summary": {
+    "totalTests": 4,
+    "passed": 4,
+    "failed": 0,
+    "errors": []
+  },
+  "servers": [
+    {
+      "serverName": "Auto-connected Server",
+      "serverUrl": "http://localhost:3000/mcp",
+      "timestamp": "2026-06-01T23:03:08.678Z",
+      "connectionStatus": "connected",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [
+        {
+          "toolName": "verify_session",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Session OK\nbase_url : http://localhost:5001/v1\nmodel    : auto"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "run_agent",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool run_agent: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+              }
+            ],
+            "isError": true
+          },
+          "error": null
+        },
+        {
+          "toolName": "ping_agent",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "status       : OK\nbase_url     : http://localhost:5001/v1\nmodel        : auto\nmax_steps    : 10\ntemperature  : 0\napi_key_set  : true"
+              }
+            ]
+          },
+          "error": null
+        }
+      ],
+      "resourceTests": [],
+      "errors": []
+    },
+    {
+      "serverName": "Local MCP Server",
+      "serverUrl": "https://zombiecoder.my.id/mcp",
+      "timestamp": "2026-06-01T23:03:09.581Z",
+      "connectionStatus": "connected",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [
+        {
+          "toolName": "verify_session",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Session OK\nbase_url : http://localhost:5001/v1\nmodel    : auto"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "run_agent",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool run_agent: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+              }
+            ],
+            "isError": true
+          },
+          "error": null
+        },
+        {
+          "toolName": "ping_agent",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "status       : OK\nbase_url     : http://localhost:5001/v1\nmodel        : auto\nmax_steps    : 10\ntemperature  : 0\napi_key_set  : true"
+              }
+            ]
+          },
+          "error": null
+        }
+      ],
+      "resourceTests": [],
+      "errors": []
+    },
+    {
+      "serverName": "Proxy Bridge",
+      "serverUrl": "https://zombiecoder.my.id/sse",
+      "timestamp": "2026-06-01T23:03:10.913Z",
+      "connectionStatus": "connected",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [
+        {
+          "toolName": "verify_session",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Session OK\nbase_url : http://localhost:5001/v1\nmodel    : auto"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "run_agent",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "MCP error -32602: Input validation error: Invalid arguments for tool run_agent: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  }\n]"
+              }
+            ],
+            "isError": true
+          },
+          "error": null
+        },
+        {
+          "toolName": "ping_agent",
+          "status": "success",
+          "result": {
+            "_meta": {
+              "mimeType": "text/plain"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "status       : OK\nbase_url     : http://localhost:5001/v1\nmodel        : auto\nmax_steps    : 10\ntemperature  : 0\napi_key_set  : true"
+              }
+            ]
+          },
+          "error": null
+        }
+      ],
+      "resourceTests": [],
+      "errors": []
+    },
+    {
+      "serverName": "Proxy Server",
+      "serverUrl": "https://s.zombiecoder.my.id/mcp",
+      "timestamp": "2026-06-01T23:03:12.164Z",
+      "connectionStatus": "connected",
+      "availableTools": [
+        {
+          "name": "workspace_index",
+          "description": "Index a workspace into the local vector store."
+        },
+        {
+          "name": "workspace_search",
+          "description": "Search indexed workspace chunks."
+        },
+        {
+          "name": "conversation_create",
+          "description": "Create a new conversation id and persist its metadata."
+        },
+        {
+          "name": "conversation_history",
+          "description": "Fetch a conversation with its message history."
+        },
+        {
+          "name": "conversation_list",
+          "description": "List conversations for the current workspace or globally."
+        },
+        {
+          "name": "ssot_read",
+          "description": "Read the current SSOT file."
+        },
+        {
+          "name": "project_status",
+          "description": "Read current agent, RAG, and index status."
+        },
+        {
+          "name": "agent_routes",
+          "description": "List available routing decisions for the active agent."
+        }
+      ],
+      "availableResources": [
+        {
+          "name": "Agent status",
+          "uri": "zombiecoder://status"
+        },
+        {
+          "name": "SSOT",
+          "uri": "zombiecoder://ssot"
+        },
+        {
+          "name": "Vector index stats",
+          "uri": "zombiecoder://index"
+        },
+        {
+          "name": "Conversation list",
+          "uri": "zombiecoder://conversations"
+        }
+      ],
+      "toolTests": [
+        {
+          "toolName": "workspace_index",
+          "status": "error",
+          "result": null,
+          "error": "Streamable HTTP error: Error POSTing to endpoint: event: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":4,\"error\":{\"code\":-32602,\"message\":\"directory is required\"}}\n\nevent: done\ndata: {}\n\n"
+        },
+        {
+          "toolName": "workspace_search",
+          "status": "skipped",
+          "result": null,
+          "error": null
+        },
+        {
+          "toolName": "conversation_create",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"conversation_id\": \"98574b18-cfe5-4906-adce-9cab100db161\"\n}"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "conversation_history",
+          "status": "error",
+          "result": null,
+          "error": "Streamable HTTP error: Error POSTing to endpoint: event: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":6,\"error\":{\"code\":-32602,\"message\":\"conversation_id is required\"}}\n\nevent: done\ndata: {}\n\n"
+        },
+        {
+          "toolName": "conversation_list",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[\n  {\n    \"conversation_id\": \"98574b18-cfe5-4906-adce-9cab100db161\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:03:13\",\n    \"updated_at\": \"2026-06-01 23:03:13\"\n  },\n  {\n    \"conversation_id\": \"8f29a186-502a-4504-81cc-ff5b90fb6689\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:03:09\",\n    \"updated_at\": \"2026-06-01 23:03:09\"\n  },\n  {\n    \"conversation_id\": \"52728cd7-b1b2-425b-bf1c-c925f2e007d0\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:02:56\",\n    \"updated_at\": \"2026-06-01 23:02:56\"\n  },\n  {\n    \"conversation_id\": \"8b636538-2cb4-4d89-92f0-d25bad6ef059\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:02:44\",\n    \"updated_at\": \"2026-06-01 23:02:44\"\n  },\n  {\n    \"conversation_id\": \"f36e5cae-e71c-40a5-9f5d-c5ee85a61d0e\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:01:10\",\n    \"updated_at\": \"2026-06-01 23:01:10\"\n  },\n  {\n    \"conversation_id\": \"5767ecc8-eb7c-46f1-9490-597d505eb37a\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:00:40\",\n    \"updated_at\": \"2026-06-01 23:00:40\"\n  },\n  {\n    \"conversation_id\": \"70a31e14-917a-4e5c-9dbd-513e709daad3\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 22:59:56\",\n    \"updated_at\": \"2026-06-01 22:59:56\"\n  },\n  {\n    \"conversation_id\": \"7d7bed3f-d015-4042-81c2-4d2f5244b287\",\n    \"workspace_id\": \"conversation_create\",\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 22:30:27\",\n    \"updated_at\": \"2026-06-01 22:30:27\"\n  },\n  {\n    \"conversation_id\": \"672a894e-3547-4d1d-94fb-f42cdb0f2da9\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 15:19:51\",\n    \"updated_at\": \"2026-06-01 15:19:51\"\n  },\n  {\n    \"conversation_id\": \"ac4c62dc-f7fe-4c7d-8a05-ec630abfdf16\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 22:37:03\",\n    \"updated_at\": \"2026-05-31 22:37:03\"\n  },\n  {\n    \"conversation_id\": \"c8ac4091-59f9-4f93-9028-6c64af46b71e\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:37:01\",\n    \"updated_at\": \"2026-05-31 15:37:01\"\n  },\n  {\n    \"conversation_id\": \"99ca899a-8dd9-4192-8119-87c2901ddc2c\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:36:32\",\n    \"updated_at\": \"2026-05-31 15:36:32\"\n  },\n  {\n    \"conversation_id\": \"9f4786bc-9b9e-41b1-8f2d-6ffbf5ba620c\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:32:32\",\n    \"updated_at\": \"2026-05-31 15:32:32\"\n  },\n  {\n    \"conversation_id\": \"6590b73d-c07b-4637-9209-21a28d2781a4\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:24:16\",\n    \"updated_at\": \"2026-05-31 15:24:16\"\n  },\n  {\n    \"conversation_id\": \"cca3fc8c-b315-4d90-8c75-865e8238a11f\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:16:40\",\n    \"updated_at\": \"2026-05-31 15:16:40\"\n  },\n  {\n    \"conversation_id\": \"bd21365a-4e3d-456d-8a24-d732504dcbcd\",\n    \"workspace_id\": \"ws-report-1779935235197\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:27:22\",\n    \"updated_at\": \"2026-05-28 02:27:23\"\n  },\n  {\n    \"conversation_id\": \"14416f02-605e-482f-96ed-88ea45bca102\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:27:23\",\n    \"updated_at\": \"2026-05-28 02:27:23\"\n  },\n  {\n    \"conversation_id\": \"3359ff62-7bfb-42ce-b73b-f56b65432a4d\",\n    \"workspace_id\": \"ws-report-1779935118702\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:25:26\",\n    \"updated_at\": \"2026-05-28 02:25:26\"\n  },\n  {\n    \"conversation_id\": \"28b7bb00-1ede-4f8d-8e48-cf3bc96c212c\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:25:26\",\n    \"updated_at\": \"2026-05-28 02:25:26\"\n  },\n  {\n    \"conversation_id\": \"421da66a-29d9-4a29-bce1-228bf76b8f20\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:22:31\",\n    \"updated_at\": \"2026-05-28 02:22:31\"\n  },\n  {\n    \"conversation_id\": \"d15b35d6-b73f-4092-9141-ed6e4be171aa\",\n    \"workspace_id\": \"ws-report-1779934943000\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:22:30\",\n    \"updated_at\": \"2026-05-28 02:22:30\"\n  },\n  {\n    \"conversation_id\": \"5c4f2e08-2f79-487c-925a-da30b02805c2\",\n    \"workspace_id\": \"ws-report-1779934908662\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:21:56\",\n    \"updated_at\": \"2026-05-28 02:21:56\"\n  },\n  {\n    \"conversation_id\": \"5ef6fab2-232c-4197-a6b9-d871e03338c6\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:21:56\",\n    \"updated_at\": \"2026-05-28 02:21:56\"\n  },\n  {\n    \"conversation_id\": \"72f5e2f6-554b-42f1-b86b-6e80fa421bb1\",\n    \"workspace_id\": \"ws-report-1779933895832\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:05:03\",\n    \"updated_at\": \"2026-05-28 02:05:03\"\n  },\n  {\n    \"conversation_id\": \"03395a15-fe0c-4ae2-8646-1ccc72d3090f\",\n    \"workspace_id\": \"ws-report-1779933748653\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:02:36\",\n    \"updated_at\": \"2026-05-28 02:02:36\"\n  },\n  {\n    \"conversation_id\": \"39ab4384-642c-4fee-a47b-c8570308d485\",\n    \"workspace_id\": \"ws-report-1779933709364\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:01:56\",\n    \"updated_at\": \"2026-05-28 02:01:57\"\n  },\n  {\n    \"conversation_id\": \"4626ab07-26a0-4aa4-af86-cbafb70f66d5\",\n    \"workspace_id\": \"ws-report-1779933649528\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:00:57\",\n    \"updated_at\": \"2026-05-28 02:00:57\"\n  },\n  {\n    \"conversation_id\": \"0867189b-18fb-4f49-91fa-916c1e2fd056\",\n    \"workspace_id\": \"ws-auto-convo\",\n    \"user_id\": \"u-auto-convo\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 01:31:31\",\n    \"updated_at\": \"2026-05-28 01:31:31\"\n  },\n  {\n    \"conversation_id\": \"5b612bb6-fcc5-4a8e-9fc1-483221764e50\",\n    \"workspace_id\": \"ws-session\",\n    \"user_id\": \"u-test\",\n    \"title\": \"proof-session\",\n    \"created_at\": \"2026-05-28 01:29:49\",\n    \"updated_at\": \"2026-05-28 01:29:49\"\n  },\n  {\n    \"conversation_id\": \"aeeba01f-892b-4d48-9e18-59fe50bdd547\",\n    \"workspace_id\": \"ws-test2\",\n    \"user_id\": \"user-test2\",\n    \"title\": \"Workspace scoped\",\n    \"created_at\": \"2026-05-28 01:07:22\",\n    \"updated_at\": \"2026-05-28 01:07:22\"\n  },\n  {\n    \"conversation_id\": \"e50ed89f-46b9-406f-88e5-88ecd5ad3c4f\",\n    \"workspace_id\": \"ws-test\",\n    \"user_id\": \"user-test\",\n    \"title\": \"History Test\",\n    \"created_at\": \"2026-05-28 01:06:41\",\n    \"updated_at\": \"2026-05-28 01:06:41\"\n  },\n  {\n    \"conversation_id\": \"conv1\",\n    \"workspace_id\": \"ws1\",\n    \"user_id\": \"admin\",\n    \"title\": null,\n    \"created_at\": \"2026-05-27 17:45:14\",\n    \"updated_at\": \"2026-05-27 17:45:14\"\n  }\n]"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "ssot_read",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": ""
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "project_status",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"persona\": \"ZombieCoder\",\n  \"workingDir\": \"/home/sahon/Desktop\",\n  \"hasWorkingDir\": true,\n  \"ssotExists\": false,\n  \"zombieDirExists\": false,\n  \"index\": {\n    \"documents\": 139,\n    \"chunks\": 1689,\n    \"workspaces\": 12\n  },\n  \"indexError\": null,\n  \"mcp\": {\n    \"activeSessions\": 16,\n    \"initializedSessions\": 15,\n    \"clientNames\": [\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"rmcp\",\n      \"rmcp\",\n      \"rmcp\",\n      \"rmcp\",\n      \"Windsurf\",\n      \"mcp-use Inspector\",\n      \"zombie-launcher\"\n    ],\n    \"sessions\": [\n      {\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:03:12.223Z\",\n        \"updatedAt\": \"2026-06-01T23:03:13.534Z\",\n        \"lastMethod\": \"tools/call\"\n      },\n      {\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:03:08.916Z\",\n        \"updatedAt\": \"2026-06-01T23:03:11.022Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"7a2952ab-d77b-4742-94f8-eb5bd2ea8d22\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:02:56.214Z\",\n        \"updatedAt\": \"2026-06-01T23:02:57.608Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"258f1903-3f04-421b-bded-1b7c304c8e73\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:02:43.702Z\",\n        \"updatedAt\": \"2026-06-01T23:02:45.648Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"3d616f77-21a9-45ec-938a-ee31eea62c4a\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:01:09.859Z\",\n        \"updatedAt\": \"2026-06-01T23:01:11.114Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"4850750e-02f6-4806-be0c-fe69d8f82a7c\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:00:39.688Z\",\n        \"updatedAt\": \"2026-06-01T23:00:41.017Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"f5347d30-ef79-4604-9f09-9f382ccae192\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:59:56.067Z\",\n        \"updatedAt\": \"2026-06-01T22:59:57.861Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"0939b52b-3e33-4d32-bf62-7583c3dad2b3\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:57:18.053Z\",\n        \"updatedAt\": \"2026-06-01T22:57:18.548Z\",\n        \"lastMethod\": \"resources/list\"\n      },\n      {\n        \"sessionId\": \"ed272d51-cf39-47dc-a80f-851a0b978bf2\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:57:16.579Z\",\n        \"updatedAt\": \"2026-06-01T22:57:17.249Z\",\n        \"lastMethod\": \"resources/list\"\n      },\n      {\n        \"sessionId\": \"dd751f35-c577-49a8-9942-491d42b507a5\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"rmcp\",\n          \"version\": \"1.7.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:49:11.797Z\",\n        \"updatedAt\": \"2026-06-01T22:49:11.802Z\",\n        \"lastMethod\": \"notifications/initialized\"\n      }\n    ],\n    \"recentEvents\": [\n      {\n        \"timestamp\": \"2026-06-01T23:02:57.494Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_index\",\n        \"sessionId\": \"7a2952ab-d77b-4742-94f8-eb5bd2ea8d22\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:02:57.608Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_conversations\",\n        \"sessionId\": \"7a2952ab-d77b-4742-94f8-eb5bd2ea8d22\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:08.916Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialize\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"initialize\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"protocolVersion\": \"2025-03-26\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.274Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialized_notification\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"notifications/initialized\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.399Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.524Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.649Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.897Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_create\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"conversationId\": \"8f29a186-502a-4504-81cc-ff5b90fb6689\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.143Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"count\": 31\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.270Z\",\n        \"category\": \"mcp\",\n        \"event\": \"ssot_read\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.392Z\",\n        \"category\": \"mcp\",\n        \"event\": \"project_status\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.521Z\",\n        \"category\": \"mcp\",\n        \"event\": \"agent_routes\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.644Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_status\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.774Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_ssot\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.901Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_index\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:11.022Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_conversations\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.223Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialize\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"initialize\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"protocolVersion\": \"2025-03-26\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.345Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialized_notification\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"notifications/initialized\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.468Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.699Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.815Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"resources/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.055Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_create\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"conversationId\": \"98574b18-cfe5-4906-adce-9cab100db161\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.293Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"count\": 32\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.421Z\",\n        \"category\": \"mcp\",\n        \"event\": \"ssot_read\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.534Z\",\n        \"category\": \"mcp\",\n        \"event\": \"project_status\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      }\n    ]\n  }\n}"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "toolName": "agent_routes",
+          "status": "success",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\n  \"chat\": {\n    \"model\": \"llama-3.3-70b-versatile\",\n    \"category\": \"chat\",\n    \"needsRag\": false,\n    \"confidence\": 0.8\n  },\n  \"code\": {\n    \"model\": \"qwen/qwen3-32b\",\n    \"category\": \"code\",\n    \"needsRag\": false,\n    \"confidence\": 0.75\n  },\n  \"rag\": {\n    \"model\": \"llama-3.3-70b-versatile\",\n    \"category\": \"rag\",\n    \"needsRag\": true,\n    \"confidence\": 0.7\n  },\n  \"guard\": {\n    \"model\": \"openai/gpt-oss-safeguard-20b\",\n    \"category\": \"guard\",\n    \"needsRag\": false,\n    \"confidence\": 0.7\n  }\n}"
+              }
+            ]
+          },
+          "error": null
+        }
+      ],
+      "resourceTests": [
+        {
+          "resourceName": "Agent status",
+          "uri": "zombiecoder://status",
+          "status": "success",
+          "content": {
+            "contents": [
+              {
+                "uri": "zombiecoder://status",
+                "mimeType": "application/json",
+                "text": "{\n  \"persona\": \"ZombieCoder\",\n  \"workingDir\": \"/home/sahon/Desktop\",\n  \"hasWorkingDir\": true,\n  \"ssotExists\": false,\n  \"zombieDirExists\": false,\n  \"index\": {\n    \"documents\": 139,\n    \"chunks\": 1689,\n    \"workspaces\": 12\n  },\n  \"indexError\": null,\n  \"mcp\": {\n    \"activeSessions\": 16,\n    \"initializedSessions\": 15,\n    \"clientNames\": [\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"mcp-use\",\n      \"rmcp\",\n      \"rmcp\",\n      \"rmcp\",\n      \"rmcp\",\n      \"Windsurf\",\n      \"mcp-use Inspector\",\n      \"zombie-launcher\"\n    ],\n    \"sessions\": [\n      {\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:03:12.223Z\",\n        \"updatedAt\": \"2026-06-01T23:03:13.778Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:03:08.916Z\",\n        \"updatedAt\": \"2026-06-01T23:03:11.022Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"7a2952ab-d77b-4742-94f8-eb5bd2ea8d22\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:02:56.214Z\",\n        \"updatedAt\": \"2026-06-01T23:02:57.608Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"258f1903-3f04-421b-bded-1b7c304c8e73\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:02:43.702Z\",\n        \"updatedAt\": \"2026-06-01T23:02:45.648Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"3d616f77-21a9-45ec-938a-ee31eea62c4a\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:01:09.859Z\",\n        \"updatedAt\": \"2026-06-01T23:01:11.114Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"4850750e-02f6-4806-be0c-fe69d8f82a7c\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T23:00:39.688Z\",\n        \"updatedAt\": \"2026-06-01T23:00:41.017Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"f5347d30-ef79-4604-9f09-9f382ccae192\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:59:56.067Z\",\n        \"updatedAt\": \"2026-06-01T22:59:57.861Z\",\n        \"lastMethod\": \"resources/read\"\n      },\n      {\n        \"sessionId\": \"0939b52b-3e33-4d32-bf62-7583c3dad2b3\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:57:18.053Z\",\n        \"updatedAt\": \"2026-06-01T22:57:18.548Z\",\n        \"lastMethod\": \"resources/list\"\n      },\n      {\n        \"sessionId\": \"ed272d51-cf39-47dc-a80f-851a0b978bf2\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"mcp-use\",\n          \"version\": \"1.28.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:57:16.579Z\",\n        \"updatedAt\": \"2026-06-01T22:57:17.249Z\",\n        \"lastMethod\": \"resources/list\"\n      },\n      {\n        \"sessionId\": \"dd751f35-c577-49a8-9942-491d42b507a5\",\n        \"protocolVersion\": \"2025-03-26\",\n        \"clientInfo\": {\n          \"name\": \"rmcp\",\n          \"version\": \"1.7.0\"\n        },\n        \"logLevel\": \"info\",\n        \"initialized\": true,\n        \"createdAt\": \"2026-06-01T22:49:11.797Z\",\n        \"updatedAt\": \"2026-06-01T22:49:11.802Z\",\n        \"lastMethod\": \"notifications/initialized\"\n      }\n    ],\n    \"recentEvents\": [\n      {\n        \"timestamp\": \"2026-06-01T23:03:08.916Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialize\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"initialize\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"protocolVersion\": \"2025-03-26\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.274Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialized_notification\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"notifications/initialized\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.399Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.524Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.649Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:09.897Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_create\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"conversationId\": \"8f29a186-502a-4504-81cc-ff5b90fb6689\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.143Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_list\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"count\": 31\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.270Z\",\n        \"category\": \"mcp\",\n        \"event\": \"ssot_read\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.392Z\",\n        \"category\": \"mcp\",\n        \"event\": \"project_status\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.521Z\",\n        \"category\": \"mcp\",\n        \"event\": \"agent_routes\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.644Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_status\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.774Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_ssot\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:10.901Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_index\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:11.022Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_conversations\",\n        \"sessionId\": \"8bc32ead-f246-484b-b6e8-41652ad4e6ea\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.223Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialize\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"initialize\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"protocolVersion\": \"2025-03-26\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.345Z\",\n        \"category\": \"mcp\",\n        \"event\": \"initialized_notification\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"clientName\": \"mcp-use\",\n        \"clientVersion\": \"1.28.0\",\n        \"method\": \"notifications/initialized\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.468Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.699Z\",\n        \"category\": \"mcp\",\n        \"event\": \"tools_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:12.815Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"resources/list\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.055Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_create\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"conversationId\": \"98574b18-cfe5-4906-adce-9cab100db161\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.293Z\",\n        \"category\": \"mcp\",\n        \"event\": \"conversation_list\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\",\n        \"details\": {\n          \"count\": 32\n        }\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.421Z\",\n        \"category\": \"mcp\",\n        \"event\": \"ssot_read\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.534Z\",\n        \"category\": \"mcp\",\n        \"event\": \"project_status\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.665Z\",\n        \"category\": \"mcp\",\n        \"event\": \"agent_routes\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"tools/call\",\n        \"status\": \"ok\"\n      },\n      {\n        \"timestamp\": \"2026-06-01T23:03:13.778Z\",\n        \"category\": \"mcp\",\n        \"event\": \"resources_read_status\",\n        \"sessionId\": \"b007149e-a374-4551-81b3-5b53f86c5cf8\",\n        \"method\": \"resources/read\",\n        \"status\": \"ok\"\n      }\n    ]\n  }\n}"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "resourceName": "SSOT",
+          "uri": "zombiecoder://ssot",
+          "status": "success",
+          "content": {
+            "contents": [
+              {
+                "uri": "zombiecoder://ssot",
+                "mimeType": "text/markdown",
+                "text": ""
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "resourceName": "Vector index stats",
+          "uri": "zombiecoder://index",
+          "status": "success",
+          "content": {
+            "contents": [
+              {
+                "uri": "zombiecoder://index",
+                "mimeType": "application/json",
+                "text": "{\n  \"documents\": 139,\n  \"chunks\": 1689,\n  \"workspaces\": 12\n}"
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "resourceName": "Conversation list",
+          "uri": "zombiecoder://conversations",
+          "status": "success",
+          "content": {
+            "contents": [
+              {
+                "uri": "zombiecoder://conversations",
+                "mimeType": "application/json",
+                "text": "[\n  {\n    \"conversation_id\": \"98574b18-cfe5-4906-adce-9cab100db161\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:03:13\",\n    \"updated_at\": \"2026-06-01 23:03:13\"\n  },\n  {\n    \"conversation_id\": \"8f29a186-502a-4504-81cc-ff5b90fb6689\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:03:09\",\n    \"updated_at\": \"2026-06-01 23:03:09\"\n  },\n  {\n    \"conversation_id\": \"52728cd7-b1b2-425b-bf1c-c925f2e007d0\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:02:56\",\n    \"updated_at\": \"2026-06-01 23:02:56\"\n  },\n  {\n    \"conversation_id\": \"8b636538-2cb4-4d89-92f0-d25bad6ef059\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:02:44\",\n    \"updated_at\": \"2026-06-01 23:02:44\"\n  },\n  {\n    \"conversation_id\": \"f36e5cae-e71c-40a5-9f5d-c5ee85a61d0e\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:01:10\",\n    \"updated_at\": \"2026-06-01 23:01:10\"\n  },\n  {\n    \"conversation_id\": \"5767ecc8-eb7c-46f1-9490-597d505eb37a\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 23:00:40\",\n    \"updated_at\": \"2026-06-01 23:00:40\"\n  },\n  {\n    \"conversation_id\": \"70a31e14-917a-4e5c-9dbd-513e709daad3\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 22:59:56\",\n    \"updated_at\": \"2026-06-01 22:59:56\"\n  },\n  {\n    \"conversation_id\": \"7d7bed3f-d015-4042-81c2-4d2f5244b287\",\n    \"workspace_id\": \"conversation_create\",\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 22:30:27\",\n    \"updated_at\": \"2026-06-01 22:30:27\"\n  },\n  {\n    \"conversation_id\": \"672a894e-3547-4d1d-94fb-f42cdb0f2da9\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-06-01 15:19:51\",\n    \"updated_at\": \"2026-06-01 15:19:51\"\n  },\n  {\n    \"conversation_id\": \"ac4c62dc-f7fe-4c7d-8a05-ec630abfdf16\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 22:37:03\",\n    \"updated_at\": \"2026-05-31 22:37:03\"\n  },\n  {\n    \"conversation_id\": \"c8ac4091-59f9-4f93-9028-6c64af46b71e\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:37:01\",\n    \"updated_at\": \"2026-05-31 15:37:01\"\n  },\n  {\n    \"conversation_id\": \"99ca899a-8dd9-4192-8119-87c2901ddc2c\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:36:32\",\n    \"updated_at\": \"2026-05-31 15:36:32\"\n  },\n  {\n    \"conversation_id\": \"9f4786bc-9b9e-41b1-8f2d-6ffbf5ba620c\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:32:32\",\n    \"updated_at\": \"2026-05-31 15:32:32\"\n  },\n  {\n    \"conversation_id\": \"6590b73d-c07b-4637-9209-21a28d2781a4\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:24:16\",\n    \"updated_at\": \"2026-05-31 15:24:16\"\n  },\n  {\n    \"conversation_id\": \"cca3fc8c-b315-4d90-8c75-865e8238a11f\",\n    \"workspace_id\": null,\n    \"user_id\": null,\n    \"title\": null,\n    \"created_at\": \"2026-05-31 15:16:40\",\n    \"updated_at\": \"2026-05-31 15:16:40\"\n  },\n  {\n    \"conversation_id\": \"bd21365a-4e3d-456d-8a24-d732504dcbcd\",\n    \"workspace_id\": \"ws-report-1779935235197\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:27:22\",\n    \"updated_at\": \"2026-05-28 02:27:23\"\n  },\n  {\n    \"conversation_id\": \"14416f02-605e-482f-96ed-88ea45bca102\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:27:23\",\n    \"updated_at\": \"2026-05-28 02:27:23\"\n  },\n  {\n    \"conversation_id\": \"3359ff62-7bfb-42ce-b73b-f56b65432a4d\",\n    \"workspace_id\": \"ws-report-1779935118702\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:25:26\",\n    \"updated_at\": \"2026-05-28 02:25:26\"\n  },\n  {\n    \"conversation_id\": \"28b7bb00-1ede-4f8d-8e48-cf3bc96c212c\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:25:26\",\n    \"updated_at\": \"2026-05-28 02:25:26\"\n  },\n  {\n    \"conversation_id\": \"421da66a-29d9-4a29-bce1-228bf76b8f20\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:22:31\",\n    \"updated_at\": \"2026-05-28 02:22:31\"\n  },\n  {\n    \"conversation_id\": \"d15b35d6-b73f-4092-9141-ed6e4be171aa\",\n    \"workspace_id\": \"ws-report-1779934943000\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:22:30\",\n    \"updated_at\": \"2026-05-28 02:22:30\"\n  },\n  {\n    \"conversation_id\": \"5c4f2e08-2f79-487c-925a-da30b02805c2\",\n    \"workspace_id\": \"ws-report-1779934908662\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:21:56\",\n    \"updated_at\": \"2026-05-28 02:21:56\"\n  },\n  {\n    \"conversation_id\": \"5ef6fab2-232c-4197-a6b9-d871e03338c6\",\n    \"workspace_id\": \"documentation-proof\",\n    \"user_id\": \"doc-writer\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 02:21:56\",\n    \"updated_at\": \"2026-05-28 02:21:56\"\n  },\n  {\n    \"conversation_id\": \"72f5e2f6-554b-42f1-b86b-6e80fa421bb1\",\n    \"workspace_id\": \"ws-report-1779933895832\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:05:03\",\n    \"updated_at\": \"2026-05-28 02:05:03\"\n  },\n  {\n    \"conversation_id\": \"03395a15-fe0c-4ae2-8646-1ccc72d3090f\",\n    \"workspace_id\": \"ws-report-1779933748653\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:02:36\",\n    \"updated_at\": \"2026-05-28 02:02:36\"\n  },\n  {\n    \"conversation_id\": \"39ab4384-642c-4fee-a47b-c8570308d485\",\n    \"workspace_id\": \"ws-report-1779933709364\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:01:56\",\n    \"updated_at\": \"2026-05-28 02:01:57\"\n  },\n  {\n    \"conversation_id\": \"4626ab07-26a0-4aa4-af86-cbafb70f66d5\",\n    \"workspace_id\": \"ws-report-1779933649528\",\n    \"user_id\": \"report-user\",\n    \"title\": \"status-report\",\n    \"created_at\": \"2026-05-28 02:00:57\",\n    \"updated_at\": \"2026-05-28 02:00:57\"\n  },\n  {\n    \"conversation_id\": \"0867189b-18fb-4f49-91fa-916c1e2fd056\",\n    \"workspace_id\": \"ws-auto-convo\",\n    \"user_id\": \"u-auto-convo\",\n    \"title\": null,\n    \"created_at\": \"2026-05-28 01:31:31\",\n    \"updated_at\": \"2026-05-28 01:31:31\"\n  },\n  {\n    \"conversation_id\": \"5b612bb6-fcc5-4a8e-9fc1-483221764e50\",\n    \"workspace_id\": \"ws-session\",\n    \"user_id\": \"u-test\",\n    \"title\": \"proof-session\",\n    \"created_at\": \"2026-05-28 01:29:49\",\n    \"updated_at\": \"2026-05-28 01:29:49\"\n  },\n  {\n    \"conversation_id\": \"aeeba01f-892b-4d48-9e18-59fe50bdd547\",\n    \"workspace_id\": \"ws-test2\",\n    \"user_id\": \"user-test2\",\n    \"title\": \"Workspace scoped\",\n    \"created_at\": \"2026-05-28 01:07:22\",\n    \"updated_at\": \"2026-05-28 01:07:22\"\n  },\n  {\n    \"conversation_id\": \"e50ed89f-46b9-406f-88e5-88ecd5ad3c4f\",\n    \"workspace_id\": \"ws-test\",\n    \"user_id\": \"user-test\",\n    \"title\": \"History Test\",\n    \"created_at\": \"2026-05-28 01:06:41\",\n    \"updated_at\": \"2026-05-28 01:06:41\"\n  },\n  {\n    \"conversation_id\": \"conv1\",\n    \"workspace_id\": \"ws1\",\n    \"user_id\": \"admin\",\n    \"title\": null,\n    \"created_at\": \"2026-05-27 17:45:14\",\n    \"updated_at\": \"2026-05-27 17:45:14\"\n  }\n]"
+              }
+            ]
+          },
+          "error": null
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

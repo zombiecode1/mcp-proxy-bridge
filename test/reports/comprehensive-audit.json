@@ -1,0 +1,42 @@
+{
+  "testName": "Phase 6 — Comprehensive Self-Audit",
+  "timestamp": "2026-06-03T01:44:07Z",
+  "summary": {
+    "total": 20,
+    "passed": 13,
+    "failed": 7
+  },
+  "overall": "FAIL",
+  "tests": [{"name":"proxi-health","status":"pass","detail":"ok"},{"name":"proxi-health","status":"fail","detail":"ok"},{"name":"agent-health","status":"pass","detail":"HTTP 200"},{"name":"oauth-json","status":"pass","detail":"token obtained"},{"name":"oauth-form","status":"pass","detail":"token via form"},{"name":"bad-grant","status":"fail","detail":"400000"},{"name":"bad-secret","status":"fail","detail":"401000"},{"name":"authd-ping","status":"pass","detail":"200"},{"name":"agent-b-tools","status":"pass","detail":"3 tools"},{"name":"agent-a-tools","status":"pass","detail":"8 tools"},{"name":"agent-a-session","status":"pass","detail":"session created"},{"name":"ssot-create","status":"fail","detail":"not created"},{"name":"file-watcher","status":"fail","detail":"not detected"},{"name":"vector-search","status":"pass","detail":"1 results"},{"name":"db-integrity","status":"pass","detail":"142 docs, 1692 chunks"},{"name":"cross-isolation-a","status":"pass","detail":"no run_agent in A"},{"name":"cross-isolation-b","status":"pass","detail":"no workspace_search in B"},{"name":"cors","status":"pass","detail":"access-control-allow-origin: *"},{"name":"sse-auth","status":"fail","detail":"got 401401"}],
+  "environment": {
+    "node": "v22.22.3",
+    "platform": "linux",
+    "editors": {
+      "vscode": "/usr/bin/code
+1.120.0",
+      "zed": "/home/sahon/.local/bin/zed
+Zed 1.4.4 1d0b482638588e5507184d91631e30596339ee1b  – /home/sahon/.local/zed.app/libexec/zed-editor",
+      "windsurf": "/usr/bin/windsurf
+1.110.1"
+    },
+    "db": {
+      "documents": 142,
+      "chunks": 1692
+    }
+  },
+  "proofs": {
+    "directory": "/home/sahon/mcp/test/work/proofs/",
+    "count": 11,
+    "report": "/home/sahon/mcp/test/work/comprehensive-audit.json"
+  },
+  "audit": {
+    "totalIssuesFound": 50,
+    "criticalFixed": 3,
+    "highFixed": 16,
+    "mediumFixed": 1,
+    "mediumDeferred": 12,
+    "lowFixed": 5,
+    "lowDeferred": 6,
+    "infoDeferred": 7
+  }
+}

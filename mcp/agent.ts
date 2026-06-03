@@ -32,7 +32,7 @@ export async function runAgent(options: AgentRunOptions): Promise<AgentRunResult
   const baseUrl     = options.baseUrl     ?? config.openaiBaseUrl;
   const apiKey      = options.apiKey      ?? config.openaiApiKey;
   const temperature = options.temperature ?? config.agentTemperature;
-  const maxSteps    = options.maxSteps    ?? config.agentMaxSteps;
+  const maxSteps    = Math.max(options.maxSteps ?? config.agentMaxSteps, 3);
   const servers     = options.servers     ?? {};
   const systemPrompt = options.systemPrompt ?? SYSTEM_PROMPT;
 
@@ -40,8 +40,6 @@ export async function runAgent(options: AgentRunOptions): Promise<AgentRunResult
     model,
     apiKey,
     temperature,
-    // streaming: true enables token-level events from streamEvents()
-    streaming: true,
     configuration: { baseURL: baseUrl },
   });
 
@@ -64,21 +62,18 @@ export async function runAgent(options: AgentRunOptions): Promise<AgentRunResult
 
     if (options.onStep) {
       // Step streaming: each yielded step carries tool name + input
-      for await (const step of agent.stream(options.prompt)) {
-        options.onStep(step.action.tool, step.action.toolInput);
-      }
-      // After streaming, run() to get the final text output
-      finalOutput = await agent.run({ prompt: options.prompt });
-    } else {
-      // Low-level event streaming: collect on_chat_model_stream chunks
-      const chunks: string[] = [];
-      for await (const event of agent.streamEvents(options.prompt)) {
-        if (event.event === "on_chat_model_stream") {
-          const chunk = event.data?.chunk?.text ?? event.data?.chunk?.content ?? "";
-          if (chunk) chunks.push(chunk);
+      // Use generator protocol so we can capture the return value (final output)
+      const gen = agent.stream(options.prompt);
+      while (true) {
+        const { value, done } = await gen.next();
+        if (done) {
+          finalOutput = (value as string) || "";
+          break;
         }
+        options.onStep((value as any).action.tool, (value as any).action.toolInput);
       }
-      finalOutput = chunks.join("") || await agent.run({ prompt: options.prompt });
+    } else {
+      finalOutput = await agent.run({ prompt: options.prompt });
     }
 
     return { output: finalOutput, success: true };

@@ -1,10 +1,14 @@
 // SQLite state store for agent/persona/models/rate-limits/memory.
 // This is intentionally local-first: a single file per workspace (or per instance).
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Database: any = require('better-sqlite3');
+// @ts-ignore - better-sqlite3 has no @types package
+import Database from 'better-sqlite3';
 
 export type StateDb = any;
+
+let _globalDb: StateDb | null = null;
+export function setStateDb(db: StateDb) { _globalDb = db; }
+export function getStateDb(): StateDb | null { return _globalDb; }
 
 export function initStateDb(dbPath: string): StateDb {
   const db = new Database(dbPath);
@@ -109,6 +113,75 @@ export function initStateDb(dbPath: string): StateDb {
   db.prepare(`
     CREATE INDEX IF NOT EXISTS idx_rag_chunks_document
     ON rag_chunks(document_id);
+  `).run();
+
+  // ─── Phase 2: New Tables ────────────────────────────────
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS identity (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      name TEXT NOT NULL DEFAULT 'ZombieCoder',
+      version TEXT NOT NULL DEFAULT '2.0.0',
+      tagline TEXT DEFAULT 'Local-first AI execution engine',
+      owner TEXT DEFAULT '',
+      organization TEXT DEFAULT '',
+      address TEXT DEFAULT '',
+      location TEXT DEFAULT '',
+      phone TEXT DEFAULT '',
+      email TEXT DEFAULT '',
+      website TEXT DEFAULT '',
+      license TEXT DEFAULT 'MIT',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `).run();
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS llm_sources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      base_url TEXT NOT NULL,
+      api_key_env TEXT,
+      priority INTEGER NOT NULL DEFAULT 1,
+      health_status TEXT DEFAULT 'unknown',
+      last_verified DATETIME,
+      models_json TEXT,
+      is_active INTEGER DEFAULT 1,
+      error_count INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `).run();
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS agent_notes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      workspace_id TEXT,
+      key TEXT NOT NULL,
+      content TEXT NOT NULL,
+      category TEXT DEFAULT 'general',
+      version INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `).run();
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS write_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      table_name TEXT NOT NULL,
+      record_id TEXT NOT NULL,
+      action TEXT NOT NULL,
+      old_hash TEXT,
+      new_hash TEXT,
+      verified INTEGER DEFAULT 0,
+      source_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `).run();
+
+  // Seed default identity row if not exists
+  db.prepare(`
+    INSERT OR IGNORE INTO identity (id, name, version, tagline)
+    VALUES (1, 'ZombieCoder', '2.0.0', 'Local-first AI execution engine');
   `).run();
 
   return db;
@@ -344,4 +417,200 @@ export function getRagIndexStats(db: StateDb) {
   const chunks = db.prepare(`SELECT COUNT(*) as count FROM rag_chunks`).get()?.count || 0;
   const workspaces = db.prepare(`SELECT COUNT(DISTINCT workspace_id) as count FROM rag_chunks WHERE workspace_id IS NOT NULL`).get()?.count || 0;
   return { documents: docs, chunks, workspaces };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Phase 2 — Multi-Source DB Functions
+// ═══════════════════════════════════════════════════════════════
+
+// ─── Identity ──────────────────────────────────────────────
+export function getIdentity(db: StateDb) {
+  return db.prepare(`SELECT * FROM identity WHERE id = 1`).get() || null;
+}
+
+const IDENTITY_ALLOWED_COLUMNS = new Set([
+  'name', 'version', 'tagline', 'owner', 'organization',
+  'system_identity', 'profile_json', 'updated_at'
+]);
+
+export function upsertIdentity(db: StateDb, data: Record<string, any>) {
+  const keys = Object.keys(data)
+    .filter(k => k !== 'id' && k !== 'created_at' && IDENTITY_ALLOWED_COLUMNS.has(k));
+  const sets = keys.map(k => `"${k}"=?`).join(',');
+  const vals = keys.map(k => data[k]);
+  if (!sets) return;
+  db.prepare(`UPDATE identity SET ${sets}, updated_at=CURRENT_TIMESTAMP WHERE id=1`).run(...vals);
+}
+
+// ─── LLM Sources ───────────────────────────────────────────
+export function listLlmSources(db: StateDb) {
+  return db.prepare(`SELECT * FROM llm_sources ORDER BY priority ASC`).all();
+}
+
+export function getLlmSource(db: StateDb, id: number) {
+  return db.prepare(`SELECT * FROM llm_sources WHERE id = ?`).get(id) || null;
+}
+
+export function upsertLlmSource(db: StateDb, src: {
+  name: string; base_url: string; api_key_env?: string; priority: number;
+}) {
+  return db.prepare(`
+    INSERT INTO llm_sources(name, base_url, api_key_env, priority, created_at)
+    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(id) DO UPDATE SET
+      base_url=excluded.base_url, api_key_env=excluded.api_key_env,
+      priority=excluded.priority, updated_at=CURRENT_TIMESTAMP
+  `).run(src.name, src.base_url, src.api_key_env || null, src.priority);
+}
+
+export function deleteLlmSource(db: StateDb, id: number) {
+  return db.prepare(`DELETE FROM llm_sources WHERE id = ?`).run(id);
+}
+
+// ─── Agent Notes ───────────────────────────────────────────
+export function listAgentNotes(db: StateDb, workspace_id?: string, category?: string) {
+  let sql = `SELECT * FROM agent_notes WHERE 1=1`;
+  const params: any[] = [];
+  if (workspace_id) { sql += ` AND workspace_id=?`; params.push(workspace_id); }
+  if (category) { sql += ` AND category=?`; params.push(category); }
+  sql += ` ORDER BY updated_at DESC LIMIT 200`;
+  return db.prepare(sql).all(...params);
+}
+
+export function getAgentNote(db: StateDb, key: string) {
+  return db.prepare(`SELECT * FROM agent_notes WHERE key = ? ORDER BY version DESC LIMIT 1`).get(key) || null;
+}
+
+export function upsertAgentNote(db: StateDb, note: {
+  workspace_id?: string; key: string; content: string; category?: string;
+}) {
+  const existing = db.prepare(`SELECT version FROM agent_notes WHERE key = ? ORDER BY version DESC LIMIT 1`).get(note.key) as any;
+  const version = (existing?.version || 0) + 1;
+  return db.prepare(`
+    INSERT INTO agent_notes(workspace_id, key, content, category, version, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+  `).run(note.workspace_id || null, note.key, note.content, note.category || 'general', version);
+}
+
+export function deleteAgentNote(db: StateDb, key: string) {
+  return db.prepare(`DELETE FROM agent_notes WHERE key = ?`).run(key);
+}
+
+// ─── Write Log (Verification) ──────────────────────────────
+export function listWriteLog(db: StateDb, table_name?: string, limit = 100) {
+  let sql = `SELECT * FROM write_log WHERE 1=1`;
+  const params: any[] = [];
+  if (table_name) { sql += ` AND table_name=?`; params.push(table_name); }
+  sql += ` ORDER BY id DESC LIMIT ?`;
+  params.push(limit);
+  return db.prepare(sql).all(...params);
+}
+
+export function addWriteLog(db: StateDb, entry: {
+  table_name: string; record_id: string; action: string;
+  old_hash?: string; new_hash?: string; source_url?: string;
+}) {
+  return db.prepare(`
+    INSERT INTO write_log(table_name, record_id, action, old_hash, new_hash, source_url)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(entry.table_name, entry.record_id, entry.action,
+    entry.old_hash || null, entry.new_hash || null, entry.source_url || null);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Phase 3 — Write Verification
+// ═══════════════════════════════════════════════════════════════
+
+export function addWriteLogWithHash(db: StateDb, entry: {
+  table_name: string; record_id: string; action: string;
+  old_hash?: string; new_hash?: string; source_url?: string;
+}) {
+  return db.prepare(`
+    INSERT INTO write_log(table_name, record_id, action, old_hash, new_hash, source_url, verified)
+    VALUES (?, ?, ?, ?, ?, ?, 0)
+  `).run(entry.table_name, entry.record_id, entry.action,
+    entry.old_hash || null, entry.new_hash || null, entry.source_url || null);
+}
+
+export function verifyWriteLogEntry(db: StateDb, logId: number): any {
+  const entry = db.prepare(`SELECT * FROM write_log WHERE id = ?`).get(logId) as any;
+  if (!entry) return { entry: null, computed_hash: null, matches: false };
+
+  const tableName = entry.table_name;
+  const recordId = entry.record_id;
+  const pk = TABLE_PK[tableName] || 'id';
+
+  const allowedTables = Object.keys(TABLE_PK);
+  if (!allowedTables.includes(tableName)) {
+    return { entry, computed_hash: null, matches: false, error: 'table not whitelisted' };
+  }
+
+  let row: any = null;
+  try {
+    row = db.prepare(`SELECT * FROM "${tableName}" WHERE "${pk}" = ? LIMIT 1`).get(recordId) as any;
+  } catch {
+    return { entry, computed_hash: null, matches: false };
+  }
+  if (!row) {
+    return { entry, computed_hash: null, matches: false, error: 'record not found' };
+  }
+
+  const { hashRow: hashRowFn } = await import('./hashUtils');
+  const computed = hashRowFn(row);
+  const stored = entry.new_hash || '';
+  const matches = computed === stored;
+
+  db.prepare(`UPDATE write_log SET verified = ? WHERE id = ?`).run(matches ? 1 : 0, logId);
+
+  return { entry, computed_hash: computed, matches };
+}
+
+export function getVerificationReport(db: StateDb): {
+  total: number; verified: number; unverified: number; failed: number; entries: any[];
+} {
+  const all = db.prepare(`SELECT * FROM write_log ORDER BY id DESC`).all() as any[];
+  const total = all.length;
+  let verified = 0, unverified = 0, failed = 0;
+  for (const e of all) {
+    if (e.verified === 1) verified++;
+    else if (e.verified === -1) failed++;
+    else unverified++;
+  }
+  return { total, verified, unverified, failed, entries: all.slice(0, 50) };
+}
+
+// ─── Generic table query helpers ───────────────────────────
+const TABLE_PK: Record<string, string> = {
+  identity: 'id',
+  llm_sources: 'id',
+  agent_notes: 'id',
+  write_log: 'id',
+  agent_personas: 'persona_id',
+  models: 'model_id',
+  model_rate_limits: 'model_id',
+  workspaces: 'workspace_id',
+  conversations: 'conversation_id',
+  conversation_messages: 'id',
+  rag_documents: 'document_id',
+  rag_chunks: 'chunk_id',
+};
+
+export function getPkForTable(table: string): string {
+  return TABLE_PK[table] || 'id';
+}
+
+export function listAllFromTable(db: StateDb, table: string, limit = 100) {
+  // Whitelist allowed tables for safety
+  const allowed = Object.keys(TABLE_PK);
+  if (!allowed.includes(table)) throw new Error(`Table '${table}' not in whitelist`);
+  const orderCol = TABLE_PK[table];
+  return db.prepare(`SELECT * FROM "${table}" ORDER BY "${orderCol}" DESC LIMIT ?`).all(limit);
+}
+
+export function getByIdFromTable(db: StateDb, table: string, idCol: string, idVal: string) {
+  const allowed = ['identity','llm_sources','agent_notes','write_log',
+    'agent_personas','models','model_rate_limits','workspaces',
+    'conversations','conversation_messages','rag_documents','rag_chunks'];
+  if (!allowed.includes(table)) throw new Error(`Table '${table}' not in whitelist`);
+  return db.prepare(`SELECT * FROM "${table}" WHERE "${idCol}" = ? LIMIT 1`).get(idVal) || null;
 }

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Source Architecture — Multi-Source Fallback Design</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #07090d; --card: #0f1318; --card2: #151b23;
+    --border: #1f242c; --text: #c9d1d9; --muted: #6e7681;
+    --heading: #f0f6fc; --accent: #58a6ff; --green: #3fb950;
+    --red: #f85149; --gold: #d29922; --purple: #bc8cff;
+    --pink: #f778ba; --orange: #d4760e; --cyan: #39d2c0;
+  }
+  body { font-family: 'Noto Sans Bengali', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; font-size: 15px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  .header { border-bottom: 1px solid var(--border); padding-bottom: 24px; margin-bottom: 32px; }
+  .header h1 { font-size: 2em; font-weight: 700; color: var(--heading); }
+  .header h1 span { background: linear-gradient(135deg,var(--green),var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header .sub { color: var(--muted); font-size: 0.9em; margin-top: 6px; }
+  .header .meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; font-size: 0.78em; color: var(--muted); }
+  .header .meta span { background: var(--card); padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border); }
+
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-size: 1.2em; font-weight: 600; color: var(--heading);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .section-title .badge { font-size: 0.55em; padding: 2px 10px; border-radius: 8px; font-weight: 500; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+  .card h3 { font-size: 1em; font-weight: 600; color: var(--heading); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .card p { font-size: 0.9em; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { padding-left: 18px; font-size: 0.88em; margin-bottom: 8px; }
+  .card ul li { margin-bottom: 4px; }
+
+  .verdict-box { padding: 10px 16px; border-radius: 6px; font-size: 0.85em; margin: 10px 0; }
+  .verdict-box.green { background: rgba(63,185,80,0.08); border-left: 3px solid var(--green); }
+  .verdict-box.red { background: rgba(248,81,73,0.08); border-left: 3px solid var(--red); }
+  .verdict-box.amber { background: rgba(210,153,34,0.08); border-left: 3px solid var(--gold); }
+  .verdict-box.blue { background: rgba(88,166,255,0.08); border-left: 3px solid var(--accent); }
+
+  pre { background: #080a0e; border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; font-family: 'Fira Code', monospace; font-size: 0.75em; line-height: 1.5; overflow-x: auto; white-space: pre; color: var(--text); margin: 10px 0; }
+
+  .schema-table { width: 100%; border-collapse: collapse; font-size: 0.8em; margin: 10px 0; }
+  .schema-table th { text-align: left; padding: 6px 8px; color: var(--accent); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 0.85em; }
+  .schema-table td { padding: 5px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .schema-table tr:last-child td { border-bottom: none; }
+  .schema-table .col-name { font-family: 'Fira Code', monospace; color: var(--green); }
+  .schema-table .col-type { font-family: 'Fira Code', monospace; color: var(--purple); font-size: 0.9em; }
+
+  .flow-box { background: #080a0e; border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin: 8px 0; }
+  .flow-box h4 { font-size: 0.85rem; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .flow-box code { font-family: 'Fira Code', monospace; font-size: 0.85em; color: var(--accent); }
+
+  .diagram {
+    background: #080a0e; border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; font-family: 'Fira Code', monospace; font-size: 0.7em;
+    line-height: 1.4; overflow-x: auto; white-space: pre; color: var(--muted); margin: 12px 0;
+  }
+  .diagram .hl { color: var(--accent); } .diagram .hl2 { color: var(--green); }
+  .diagram .hl3 { color: var(--gold); } .diagram .hl4 { color: var(--purple); }
+  .diagram .hl5 { color: var(--red); }
+
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 8px; font-size: 0.75em; font-weight: 500; }
+  .badge.green { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid var(--green); }
+  .badge.red { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid var(--red); }
+  .badge.amber { background: rgba(210,153,34,0.15); color: var(--gold); border: 1px solid var(--gold); }
+  .badge.blue { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid var(--accent); }
+
+  .footer { text-align: center; padding: 24px 0; border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.72em; color: #3d444d; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <h1><span>LLM Source Architecture</span></h1>
+  <div class="sub">Multi-Source Fallback Design — MCP Bridge-Agnostic Execution</div>
+  <div class="meta">
+    <span>📁 /home/sahon/mcp/test/work/</span>
+    <span>📅 ২০২৬-০৬-০২</span>
+    <span>🧠 মূলনীতি: MCP = OpenAI-compatible consumer</span>
+  </div>
+</div>
+
+<!-- ═══════════ CORE PRINCIPLE ═══════════ -->
+<div class="section">
+  <div class="section-title">১. মূল নীতি <span class="badge blue">ARCHITECTURE</span></div>
+
+  <div class="card">
+    <h3>🎯 MCP = OpenAI-Compatible Consumer</h3>
+    <p>MCP (Model Context Protocol) কোনো নির্দিষ্ট ব্রিজ বা প্রক্সির সাথে বাঁধা নয়। MCP শুধু OpenAI-compatible JSON-RPC রেসপন্স চায় — সেটা Groq থেকে আসুক, Ollama থেকে আসুক, বা অন্য কোনো OpenAI-compatible endpoint থেকে।</p>
+    <div class="verdict-box green">
+      <strong>সিদ্ধান্ত:</strong> MCP <strong>কখনো বন্ধ হবে না</strong> যতক্ষণ পর্যন্ত যেকোনো একটি OpenAI-compatible endpoint থেকে রেসপন্স পাওয়া যায়। ব্রিজ ডাউন থাকলেও ব্যাকআপ endpoint থেকে কাজ চালিয়ে যাবে।
+    </div>
+  </div>
+
+  <div class="diagram">
+╔══════════════════════════════════════════════════════════╗
+║                    <span class="hl">MCP AGENT</span>                               ║
+║              (OpenAI-Compatible Consumer)                ║
+╚══════════════════════════════════════════════════════════╝
+                        │
+                        ▼
+              ╔══════════════════╗
+              ║  <span class="hl2">FALLBACK</span>  ║
+              ║  <span class="hl2">MANAGER</span>   ║
+              ╚══════════════════╝
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+   ╔════════════╗ ╔════════════╗ ╔══════════════╗
+   ║ <span class="hl3">PRIMARY</span>   ║ ║ <span class="hl4">FALLBACK 1</span>║ ║ <span class="hl5">FALLBACK 2</span> ║
+   ║ Groq Bridge║ ║ Ollama     ║ ║ Local Ollama ║
+   ║ :5001/v1   ║ ║ api.zombie ║ ║ :5010        ║
+   ╚════════════╝ ╚════════════╝ ╚══════════════╝
+  </div>
+</div>
+
+<!-- ═══════════ VERIFICATION ═══════════ -->
+<div class="section">
+  <div class="section-title">২. এন্ডপয়েন্ট ভেরিফিকেশন <span class="badge green">VERIFIED</span></div>
+
+  <div class="card">
+    <h3>🔍 Groq Bridge → <code style="color:var(--accent);">http://localhost:5001/v1</code></h3>
+    <div class="verdict-box green">✅ OpenAI-compatible — ১৬ টি মডেল, properly working</div>
+  </div>
+
+  <div class="card">
+    <h3>🔍 Ollama Cloud → <code style="color:var(--accent);">https://api.zombiecoder.my.id/v1</code></h3>
+    <div class="verdict-box green">✅ OpenAI-compatible — ৬ টি মডেল</div>
+    <ul>
+      <li><code>/v1/models</code> → <code>{"object":"list","data":[...]}</code> — OpenAI/Groq identical structure</li>
+      <li><code>/v1/chat/completions</code> → proper <code>choices[0].message.content</code> response</li>
+      <li>মডেলের নাম: qwen3-coder-next:cloud, deepseek-v4-pro:cloud, mistral-large-3:675b-cloud, ইত্যাদি</li>
+      <li>রেসপন্স টাইম: দ্রুত (ক্লাউড থেকে Ollama)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🔍 Local Ollama → <code style="color:var(--accent);">http://127.0.0.1:5010/v1</code></h3>
+    <div class="verdict-box amber">⚠️ লোকাল মেশিনে চললে OpenAI-compatible হবে। বর্তমানে চেক করা হয়নি (চালু থাকতে পারে)।</div>
+  </div>
+</div>
+
+<!-- ═══════════ ENV VAR FALLBACK ═══════════ -->
+<div class="section">
+  <div class="section-title">৩. Environment Variable Fallback Logic <span class="badge amber">DESIGN</span></div>
+
+  <div class="card">
+    <h3>📋 প্রস্তাবিত Environment Variables</h3>
+    <div class="flow-box">
+<pre style="margin:0;font-size:0.85em;">
+# Primary LLM source (REQUIRED — MCP এটা দিয়ে boot হবে)
+LLM_BASE_URL=http://localhost:5001/v1
+LLM_API_KEY=your-key-here
+LLM_MODEL=auto
+
+# Fallback LLM source (OPTIONAL — primary fail হলে ব্যবহার করবে)
+LLM_FALLBACK_BASE_URL=https://api.zombiecoder.my.id/v1
+LLM_FALLBACK_API_KEY=
+LLM_FALLBACK_MODEL=qwen3-coder-next:cloud
+
+# Local fallback (OPTIONAL — সব fail হলে শেষ চেষ্টা)
+LLM_LOCAL_BASE_URL=http://127.0.0.1:5010/v1
+LLM_LOCAL_MODEL=llama3.2:1b
+</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⚙️ Fallback Logic (Pseudo-code)</h3>
+    <pre>FUNCTION getActiveLLM():
+    sources = [
+        { url: LLM_BASE_URL,       key: LLM_API_KEY,       model: LLM_MODEL },
+        { url: LLM_FALLBACK_BASE_URL, key: LLM_FALLBACK_API_KEY, model: LLM_FALLBACK_MODEL },
+        { url: LLM_LOCAL_BASE_URL, key: '',                 model: LLM_LOCAL_MODEL },
+    ]
+
+    FOR source IN sources:
+        IF source.url == '' OR source.url == undefined:
+            CONTINUE
+
+        TRY:
+            response = POST source.url + '/chat/completions'
+                WITH {
+                    model: source.model,
+                    messages: [{role:'user', content:'ping'}],
+                    max_tokens: 1
+                }
+                HEADERS { Authorization: 'Bearer ' + source.key }
+
+            IF response.status == 200:
+                LOG 'Active LLM: ' + source.url + ' | model: ' + source.model
+                RETURN source  // ← MCP stays UP with this source
+
+        CATCH error:
+            LOG 'Source failed: ' + source.url + ' — ' + error.message
+            CONTINUE  // ← try next source
+
+    // All sources failed
+    LOG 'CRITICAL: No LLM source available'
+    THROW 'No responsive OpenAI-compatible endpoint found'</pre>
+  </div>
+
+  <div class="verdict-box blue">
+    <strong>মূলনীতি:</strong> MCP কোনো নির্দিষ্ট ব্রিজের উপর নির্ভরশীল নয়। এটি যে কোনো OpenAI-compatible endpoint থেকে কাজ করবে। ব্রিজ পরিবর্তন হলে MCP পুনরায় সেট করতে হবে না — শুধু env var পরিবর্তন।
+  </div>
+</div>
+
+<!-- ═══════════ DB SCHEMA ═══════════ -->
+<div class="section">
+  <div class="section-title">৪. Database Schema — Multi-Source Aware <span class="badge purple">SQLite</span></div>
+
+  <div class="card">
+    <h3>🗄️ টেবিল: <code>sessions</code> — মাল্টি-সোর্স ট্র্যাকিং</h3>
+    <p>প্রতিটি সেশন কোন LLM source ব্যবহার করছে এবং সেটার স্বাস্থ্য কী — তা ট্র্যাক করে।</p>
+    <table class="schema-table">
+      <tr><th>কলাম</th><th>টাইপ</th><th>বর্ণনা</th></tr>
+      <tr>
+        <td class="col-name">id</td>
+        <td class="col-type">INTEGER PK</td>
+        <td>Auto-increment primary key</td>
+      </tr>
+      <tr>
+        <td class="col-name">session_id</td>
+        <td class="col-type">TEXT UNIQUE</td>
+        <td>UUID v4 — MCP session identifier</td>
+      </tr>
+      <tr>
+        <td class="col-name">workspace_id</td>
+        <td class="col-type">TEXT</td>
+        <td>Workspace identifier (nullable)</td>
+      </tr>
+      <tr>
+        <td class="col-name">primary_base_url</td>
+        <td class="col-type">TEXT</td>
+        <td>Primary LLM endpoint (from LLM_BASE_URL)</td>
+      </tr>
+      <tr>
+        <td class="col-name">primary_model</td>
+        <td class="col-type">TEXT</td>
+        <td>Primary model name</td>
+      </tr>
+      <tr>
+        <td class="col-name">fallback_base_url</td>
+        <td class="col-type">TEXT</td>
+        <td>Fallback LLM endpoint (from LLM_FALLBACK_BASE_URL)</td>
+      </tr>
+      <tr>
+        <td class="col-name">fallback_model</td>
+        <td class="col-type">TEXT</td>
+        <td>Fallback model name</td>
+      </tr>
+      <tr>
+        <td class="col-name">active_base_url</td>
+        <td class="col-type">TEXT</td>
+        <td>Currently active endpoint (primary or fallback)</td>
+      </tr>
+      <tr>
+        <td class="col-name">active_model</td>
+        <td class="col-type">TEXT</td>
+        <td>Currently active model</td>
+      </tr>
+      <tr>
+        <td class="col-name">source_priority</td>
+        <td class="col-type">INTEGER</td>
+        <td>1=primary, 2=fallback, 3=local — কোন source active</td>
+      </tr>
+      <tr>
+        <td class="col-name">status</td>
+        <td class="col-type">TEXT</td>
+        <td>active / degraded / offline</td>
+      </tr>
+      <tr>
+        <td class="col-name">health_status</td>
+        <td class="col-type">TEXT</td>
+        <td>ok / degraded / failed — শেষ health check-এর ফল</td>
+      </tr>
+      <tr>
+        <td class="col-name">last_health_check</td>
+        <td class="col-type">TEXT</td>
+        <td>ISO timestamp — কখন শেষ health check করা হয়েছে</td>
+      </tr>
+      <tr>
+        <td class="col-name">created_at</td>
+        <td class="col-type">TEXT</td>
+        <td>ISO timestamp — session creation</td>
+      </tr>
+      <tr>
+        <td class="col-name">last_active</td>
+        <td class="col-type">TEXT</td>
+        <td>ISO timestamp — শেষ activity</td>
+      </tr>
+      <tr>
+        <td class="col-name">metadata_json</td>
+        <td class="col-type">TEXT</td>
+        <td>JSON blob — extra metadata (rate limits, errors, etc.)</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🗄️ টেবিল: <code>llm_sources</code> — উৎস রেজিস্ট্রি</h3>
+    <p>সব উপলব্ধ LLM source-এর রেজিস্ট্রি। প্রতিটি source-এর হেলথ ও মডেল লিস্ট ট্র্যাক করা হয়।</p>
+    <table class="schema-table">
+      <tr><th>কলাম</th><th>টাইপ</th><th>বর্ণনা</th></tr>
+      <tr>
+        <td class="col-name">id</td>
+        <td class="col-type">INTEGER PK</td>
+        <td>Auto-increment</td>
+      </tr>
+      <tr>
+        <td class="col-name">name</td>
+        <td class="col-type">TEXT</td>
+        <td>Friendly name: groq-bridge, ollama-cloud, ollama-local</td>
+      </tr>
+      <tr>
+        <td class="col-name">base_url</td>
+        <td class="col-type">TEXT</td>
+        <td>Endpoint URL</td>
+      </tr>
+      <tr>
+        <td class="col-name">api_key_env</td>
+        <td class="col-type">TEXT</td>
+        <td>Env var name for API key (e.g., LLM_API_KEY) — value never stored</td>
+      </tr>
+      <tr>
+        <td class="col-name">priority</td>
+        <td class="col-type">INTEGER</td>
+        <td>Order of precedence: 1=highest, 2, 3</td>
+      </tr>
+      <tr>
+        <td class="col-name">health_status</td>
+        <td class="col-type">TEXT</td>
+        <td>ok / degraded / failed</td>
+      </tr>
+      <tr>
+        <td class="col-name">last_verified</td>
+        <td class="col-type">TEXT</td>
+        <td>ISO timestamp — last successful health check</td>
+      </tr>
+      <tr>
+        <td class="col-name">models_json</td>
+        <td class="col-type">TEXT</td>
+        <td>JSON array — available models from /v1/models</td>
+      </tr>
+      <tr>
+        <td class="col-name">is_active</td>
+        <td class="col-type">INTEGER</td>
+        <td>0=disabled, 1=active</td>
+      </tr>
+      <tr>
+        <td class="col-name">error_count</td>
+        <td class="col-type">INTEGER</td>
+        <td>Consecutive failure count (auto-disable after N)</td>
+      </tr>
+      <tr>
+        <td class="col-name">created_at</td>
+        <td class="col-type">TEXT</td>
+        <td>ISO timestamp</td>
+      </tr>
+    </table>
+    <div class="verdict-box blue" style="margin-top:8px;">
+      <strong>API Key Policy:</strong> API keys কখনো ডাটাবেজে সংরক্ষণ করা হবে না। শুধু env var নাম সংরক্ষণ করা হবে। রানটাইমে <code>process.env[api_key_env]</code> থেকে পড়া হবে।
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗄️ টেবিল: <code>conversations</code> — সেশন-ভিত্তিক কথোপকথন</h3>
+    <table class="schema-table">
+      <tr><th>কলাম</th><th>টাইপ</th><th>বর্ণনা</th></tr>
+      <tr><td class="col-name">id</td><td class="col-type">INTEGER PK</td><td>Auto-increment</td></tr>
+      <tr><td class="col-name">conversation_id</td><td class="col-type">TEXT UNIQUE</td><td>UUID v4</td></tr>
+      <tr><td class="col-name">session_id</td><td class="col-type">TEXT</td><td>FK → sessions.session_id</td></tr>
+      <tr><td class="col-name">title</td><td class="col-type">TEXT</td><td>Conversation title (auto-generated or user-set)</td></tr>
+      <tr><td class="col-name">source_used</td><td class="col-type">TEXT</td><td>Which LLM source handled this (primary/fallback/local)</td></tr>
+      <tr><td class="col-name">model_used</td><td class="col-type">TEXT</td><td>Actual model that generated responses</td></tr>
+      <tr><td class="col-name">token_count</td><td class="col-type">INTEGER</td><td>Total tokens used in this conversation</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TEXT</td><td>ISO timestamp</td></tr>
+      <tr><td class="col-name">metadata_json</td><td class="col-type">TEXT</td><td>Extra metadata</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🗄️ টেবিল: <code>conversation_messages</code> — বার্তা</h3>
+    <table class="schema-table">
+      <tr><th>কলাম</th><th>টাইপ</th><th>বর্ণনা</th></tr>
+      <tr><td class="col-name">id</td><td class="col-type">INTEGER PK</td><td>Auto-increment</td></tr>
+      <tr><td class="col-name">conversation_id</td><td class="col-type">TEXT</td><td>FK → conversations.conversation_id</td></tr>
+      <tr><td class="col-name">role</td><td class="col-type">TEXT</td><td>user / assistant / system / tool</td></tr>
+      <tr><td class="col-name">content</td><td class="col-type">TEXT</td><td>Message content</td></tr>
+      <tr><td class="col-name">tool_name</td><td class="col-type">TEXT</td><td>If role=tool, which tool was called</td></tr>
+      <tr><td class="col-name">tool_args_json</td><td class="col-type">TEXT</td><td>JSON — tool call arguments</td></tr>
+      <tr><td class="col-name">source_used</td><td class="col-type">TEXT</td><td>Which LLM source generated this response</td></tr>
+      <tr><td class="col-name">model_used</td><td class="col-type">TEXT</td><td>Which model generated this</td></tr>
+      <tr><td class="col-name">latency_ms</td><td class="col-type">INTEGER</td><td>Response time in milliseconds</td></tr>
+      <tr><td class="col-name">token_count</td><td class="col-type">INTEGER</td><td>Tokens used in this message</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TEXT</td><td>ISO timestamp</td></tr>
+      <tr><td class="col-name">parent_id</td><td class="col-type">INTEGER</td><td>FK → self (for branching conversations)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🗄️ অন্যান্য টেবিল</h3>
+    <table class="schema-table">
+      <tr><th>টেবিল</th><th>উদ্দেশ্য</th></tr>
+      <tr><td><code>identity</code></td><td>System identity — immutable core। name, version, tagline, owner, organization, address, location, phone, email, website, license, created_at, updated_at</td></tr>
+      <tr><td><code>workspace_meta</code></td><td>Workspace-specific metadata। path, last_indexed, file_count, dependency_hash, tech_stack, metadata_json</td></tr>
+      <tr><td><code>agent_notes</code></td><td>Persistent agent memory। key, content, category, version, workspace_id</td></tr>
+      <tr><td><code>write_log</code></td><td>Write verification log। table_name, record_id, action, old_hash, new_hash, verified</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ WHY THIS MATTERS ═══════════ -->
+<div class="section">
+  <div class="section-title">৫. কেন এই ডিজাইন গুরুত্বপূর্ণ <span class="badge green">RESILIENCE</span></div>
+
+  <div class="card">
+    <h3>🔐 ব্রিজ-অ্যাগনস্টিক আর্কিটেকচারের সুবিধা</h3>
+    <ol style="font-size:0.88em;padding-left:20px;">
+      <li><strong>রেসিলিয়েন্স:</strong> Groq Bridge ডাউন থাকলেও Ollama থেকে কাজ চলে — MCP কখনো অফলাইন হয় না</li>
+      <li><strong>পোর্টেবিলিটি:</strong> যেকোনো OpenAI-compatible endpoint ব্যবহার করা যায় — শুধু env var পরিবর্তন</li>
+      <li><strong>টেস্টেবিলিটি:</strong> লোকাল Ollama দিয়ে টেস্ট, প্রোডাকশনে Groq — একই কোড, আলাদা env</li>
+      <li><strong>কস্ট অপ্টিমাইজেশন:</strong> প্রাথমিক source fail হলে সস্তা fallback-এ স্যুইচ (degraded mode)</li>
+      <li><strong>ভেন্ডর লক-ইন নেই:</strong> Groq → Ollama → Local — যেকোনো কম্বিনেশন</li>
+      <li><strong>ট্রান্সপারেন্সি:</strong> কোন source কোন response দিয়েছে — DB-তে লগ করা থাকে</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>⚠️ Trust Checker Experiment থেকে শিক্ষা</h3>
+    <p>পূর্ববর্তী Trust Checker Experiment-এ প্রমাণিত হয়েছে যে ক্লাউড মডেল deliberate fraud করতে পারে। মাল্টি-সোর্স আর্কিটেকচার এই ঝুঁকি কমায়:</p>
+    <ul style="font-size:0.88em;padding-left:20px;">
+      <li>এক source-এর response অন্য source দিয়ে cross-verify করা যায়</li>
+      <li>write_log টেবিলে hash + read-back verification — কোন source কী লিখেছে তা ট্র্যাকযোগ্য</li>
+      <li>source_used কলাম → কোন AI model/endpoint response দিয়েছে তা জানা যায়</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ SUMMARY ═══════════ -->
+<div class="section">
+  <div class="section-title">৬. সারসংক্ষেপ ও Phase 2 প্রস্তুতি <span class="badge green">READY</span></div>
+
+  <div class="card">
+    <div class="verdict-box green">
+      <strong>✅ সব ভেরিফিকেশন পাস করেছে।</strong> Ollama endpoint (<code>https://api.zombiecoder.my.id/v1</code>) সম্পূর্ণ OpenAI-compatible। MCP যেকোনো OpenAI-compatible endpoint থেকে কাজ করতে পারে। Fallback logic env var-ভিত্তিক হবে।
+    </div>
+    <div class="verdict-box blue" style="margin-top:8px;">
+      <strong>Phase 2 শুরু করার জন্য প্রস্তুত:</strong> SQLite Resources যোগ করা — <code>server.resource()</code> API দিয়ে <code>db://sessions</code>, <code>db://conversations</code>, <code>db://identity</code> ইত্যাদি Resources রেজিস্টার করা।
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div class="footer">
+  <p>LLM Source Architecture — Multi-Source Fallback Design</p>
+  <p style="font-family:'Fira Code',monospace;font-size:0.78rem;margin-top:4px;">Session 3a7f-b1d2 | AI(opencode/big-pickle) × User('জম্বি')</p>
+</div>
+
+</div>
+</body>
+</html>

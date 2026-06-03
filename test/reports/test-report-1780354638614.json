@@ -1,0 +1,148 @@
+{
+  "testRunId": 1780354636353,
+  "timestamp": "2026-06-01T22:57:16.353Z",
+  "summary": {
+    "totalTests": 4,
+    "passed": 0,
+    "failed": 4,
+    "errors": []
+  },
+  "servers": [
+    {
+      "serverName": "Auto-connected Server",
+      "serverUrl": "http://localhost:3000/mcp",
+      "timestamp": "2026-06-01T22:57:16.353Z",
+      "connectionStatus": "failed",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [],
+      "resourceTests": [],
+      "errors": [
+        {
+          "step": "connection",
+          "error": "resources.map is not a function"
+        }
+      ]
+    },
+    {
+      "serverName": "Local MCP Server",
+      "serverUrl": "https://zombiecoder.my.id/mcp",
+      "timestamp": "2026-06-01T22:57:16.686Z",
+      "connectionStatus": "failed",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [],
+      "resourceTests": [],
+      "errors": [
+        {
+          "step": "connection",
+          "error": "resources.map is not a function"
+        }
+      ]
+    },
+    {
+      "serverName": "Proxy Bridge",
+      "serverUrl": "https://zombiecoder.my.id/sse",
+      "timestamp": "2026-06-01T22:57:17.370Z",
+      "connectionStatus": "failed",
+      "availableTools": [
+        {
+          "name": "verify_session",
+          "description": "Verify that the configured OpenAI-compatible endpoint, API key, and model are reachable. Returns a status object. Call this before run_agent if you want to confirm authentication without running a full agent task."
+        },
+        {
+          "name": "run_agent",
+          "description": "Execute an AI agent against a prompt. The agent discovers available MCP tools, reasons step-by-step, and returns a final answer. Progress is streamed as log messages during execution so editors show real-time feedback."
+        },
+        {
+          "name": "ping_agent",
+          "description": "Health check. Returns the active endpoint URL, model, and whether the API key variable is set. Does not make a network request — use verify_session for that."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [],
+      "resourceTests": [],
+      "errors": [
+        {
+          "step": "connection",
+          "error": "resources.map is not a function"
+        }
+      ]
+    },
+    {
+      "serverName": "Proxy Server",
+      "serverUrl": "https://s.zombiecoder.my.id/mcp",
+      "timestamp": "2026-06-01T22:57:17.994Z",
+      "connectionStatus": "failed",
+      "availableTools": [
+        {
+          "name": "workspace_index",
+          "description": "Index a workspace into the local vector store."
+        },
+        {
+          "name": "workspace_search",
+          "description": "Search indexed workspace chunks."
+        },
+        {
+          "name": "conversation_create",
+          "description": "Create a new conversation id and persist its metadata."
+        },
+        {
+          "name": "conversation_history",
+          "description": "Fetch a conversation with its message history."
+        },
+        {
+          "name": "conversation_list",
+          "description": "List conversations for the current workspace or globally."
+        },
+        {
+          "name": "ssot_read",
+          "description": "Read the current SSOT file."
+        },
+        {
+          "name": "project_status",
+          "description": "Read current agent, RAG, and index status."
+        },
+        {
+          "name": "agent_routes",
+          "description": "List available routing decisions for the active agent."
+        }
+      ],
+      "availableResources": [],
+      "toolTests": [],
+      "resourceTests": [],
+      "errors": [
+        {
+          "step": "connection",
+          "error": "resources.map is not a function"
+        }
+      ]
+    }
+  ]
+}

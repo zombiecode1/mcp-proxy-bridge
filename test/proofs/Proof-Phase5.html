@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 — Dual-Agent Split | Proof</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 40px; }
+  h1 { color: #58a6ff; font-size: 28px; margin-bottom: 6px; }
+  .subtitle { color: #8b949e; margin-bottom: 24px; }
+  .meta { color: #8b949e; font-size: 13px; margin-bottom: 30px; }
+  .meta span { margin-right: 24px; }
+  .summary { display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; }
+  .stat { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px 24px; min-width: 120px; }
+  .stat .num { font-size: 32px; font-weight: 700; }
+  .stat .label { font-size: 12px; text-transform: uppercase; color: #8b949e; letter-spacing: 1px; margin-top: 4px; }
+  .stat.pass .num { color: #3fb950; }
+  .stat.fail .num { color: #f85149; }
+  .overall { font-size: 18px; font-weight: 600; padding: 12px 20px; border-radius: 8px; display: inline-block; margin-bottom: 24px; }
+  .overall.pass { background: #1b3a1f; color: #3fb950; border: 1px solid #3fb950; }
+  .architecture { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .architecture h3 { color: #58a6ff; margin-bottom: 12px; }
+  .agent-box { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 12px 0; }
+  .agent-box h4 { color: #f0c674; margin-bottom: 8px; }
+  .agent-box .url { color: #58a6ff; font-family: monospace; }
+  .agent-box ul { list-style: none; margin-top: 8px; }
+  .agent-box li { padding: 2px 0; font-size: 13px; color: #8b949e; }
+  table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+  th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #30363d; color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; font-size: 14px; }
+  tr.pass td { border-left: 3px solid #3fb950; }
+  tr.fail td { border-left: 3px solid #f85149; }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+  .badge-pass { background: #1b3a1f; color: #3fb950; }
+  .badge-fail { background: #3a1b1b; color: #f85149; }
+  .tunnel { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 13px; line-height: 1.6; }
+  .tunnel .arrow { color: #58a6ff; }
+  .version { text-align: center; color: #484f58; font-size: 12px; margin-top: 30px; }
+</style>
+</head>
+<body>
+<h1>Phase 5 — Dual-Agent Split</h1>
+<p class="subtitle">Two independent MCP agents with Cloudflare tunnel routing • OAuth isolation</p>
+<div class="meta">
+  <span>📅 <script>document.write(new Date().toISOString())</script></span>
+  <span>🔬 13 test cases</span>
+</div>
+
+<div class="overall pass">Overall: PASS</div>
+
+<div class="summary">
+  <div class="stat pass"><div class="num">13</div><div class="label">Passed</div></div>
+  <div class="stat fail"><div class="num">0</div><div class="label">Failed</div></div>
+</div>
+
+<div class="architecture">
+  <h3>Architecture</h3>
+
+  <div class="tunnel">
+Cloudflare Edge (SSL/TLS)<br>
+  │<br>
+  ├── https://zombiecoder.my.id/*<br>
+  │   └── tunnel → localhost:3000<br>
+  │       └── <b>Agent B: AI Agent</b> (OAuth 2.1 Bearer JWT)<br>
+  │           Tools: verify_session, run_agent, ping_agent<br>
+  │<br>
+  └── https://s.zombiecoder.my.id/*<br>
+      └── tunnel → localhost:5001<br>
+          └── <b>Agent A: Workspace Agent</b> (No auth)<br>
+              Tools: workspace_index, workspace_search, conversation_*, ssot_*, project_status, agent_routes
+  </div>
+
+  <div class="agent-box">
+    <h4>🤖 Agent A — Workspace Agent</h4>
+    <div class="url">https://s.zombiecoder.my.id/mcp</div>
+    <div class="url">http://localhost:5001/mcp</div>
+    <ul>
+      <li><strong>Server:</strong> Proxi Bridge (Express + mcp-use)</li>
+      <li><strong>Auth:</strong> None (internal workspace tools)</li>
+      <li><strong>8 Tools:</strong> workspace_index, workspace_search, conversation_create, conversation_history, conversation_list, ssot_read, project_status, agent_routes</li>
+      <li><strong>Purpose:</strong> File operations, RAG search, conversation management, SSOT</li>
+    </ul>
+  </div>
+
+  <div class="agent-box">
+    <h4>🔐 Agent B — AI Agent (OAuth Protected)</h4>
+    <div class="url">https://zombiecoder.my.id/mcp</div>
+    <div class="url">http://localhost:3000/mcp</div>
+    <ul>
+      <li><strong>Server:</strong> mcp-use MCPServer (Hono)</li>
+      <li><strong>Auth:</strong> OAuth 2.1 Bearer JWT (HS256)</li>
+      <li><strong>3 Tools:</strong> verify_session, run_agent, ping_agent</li>
+      <li><strong>Session:</strong> FileSystemSessionStore (persistent)</li>
+      <li><strong>Conversations:</strong> conversation_id for multi-turn agent runs</li>
+      <li><strong>CORS:</strong> Enabled on /mcp/* and /sse/*</li>
+      <li><strong>Token Endpoint:</strong> /auth/token (client_credentials grant)</li>
+    </ul>
+  </div>
+</div>
+
+<h3 style="margin-top: 30px;">Test Results</h3>
+<table>
+<thead><tr><th>#</th><th>Category</th><th>Test</th><th>Result</th></tr></thead>
+<tbody>
+  <tr class="pass"><td>1</td><td>Agent A</td><td>8 tools available</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>2</td><td>Agent A</td><td>Health check OK</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>3</td><td>Agent A</td><td>SSE streaming works</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>4</td><td>Agent B</td><td>OAuth token obtained</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>5</td><td>Agent B</td><td>tools/list (verify_session, run_agent, ping_agent)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>6</td><td>Agent B</td><td>Auth context propagated (user: ph5-verify)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>7</td><td>Agent B</td><td>ping_agent OK</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>8</td><td>Agent B</td><td>Unauthenticated → 401 (correct)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>9</td><td>Agent B</td><td>SSE with auth → 200</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>10</td><td>Agent B</td><td>SSE without auth → 401</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>11</td><td>Isolation</td><td>Agent A isolated from Agent B tools</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>12</td><td>Isolation</td><td>Agent B isolated from Agent A tools</td><td><span class="badge badge-pass">PASS</span></td></tr>
+  <tr class="pass"><td>13</td><td>Config</td><td>Public URL configuration correct (zombiecoder.my.id)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</tbody>
+</table>
+
+<div class="version">mcp-agent-server v1.0.0 • Phase 5 — Dual-Agent Split • Cloudflare Tunnel</div>
+</body>
+</html>

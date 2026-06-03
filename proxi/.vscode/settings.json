@@ -1,0 +1,9 @@
+{
+    "env": {
+        "ANTHROPIC_BASE_URL": "http://localhost:5001/v1",
+        "ANTHROPIC_MODEL": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "ANTHROPIC_API_KEY": "", // REDACTED - set via .env
+        "ENABLE_TOOL_SEARCH": "true"
+    },
+    "autoUpdatesChannel": "latest"
+}

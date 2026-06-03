@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>এজেন্ট-এডিটর সংযোগ: MCP + Session Layer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Nirmala UI',sans-serif;background:#0a0a0a;color:#e0e0e0;line-height:1.85;padding:25px 15px}
+.container{max-width:960px;margin:0 auto}
+.header{text-align:center;padding:40px 20px 25px;margin-bottom:30px;border-bottom:3px solid #ff6b35}
+.header h1{font-size:2em;color:#ff6b35}
+.header .sub{color:#ffaa00;font-size:1.1em;margin-top:10px}
+.header .badge{display:inline-block;margin-top:10px;padding:5px 16px;background:#1a0a0a;border-radius:20px;color:#ff6b35;font-size:0.85em;border:1px solid #ff6b35}
+.section{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:30px;margin-bottom:24px}
+.section h2{font-size:1.4em;color:#ff6b35;margin-bottom:15px;padding-bottom:8px;border-bottom:1px solid rgba(255,107,53,0.2)}
+.section h3{font-size:1.1em;color:#ffaa00;margin:18px 0 8px}
+.section p{color:#ccc;margin-bottom:12px;text-align:justify}
+.box{background:rgba(255,107,53,0.04);border:1px solid rgba(255,107,53,0.12);border-radius:8px;padding:14px 16px;margin:10px 0;font-size:0.93em}
+.box.green{background:rgba(0,255,136,0.04);border-color:rgba(0,255,136,0.15)}
+.box.green .label{color:#00ff88}
+.box.red{background:rgba(255,107,107,0.04);border-color:rgba(255,107,107,0.15)}
+.box.red .label{color:#ff6b6b}
+.box.yellow{background:rgba(255,215,0,0.04);border-color:rgba(255,215,0,0.15)}
+.box.yellow .label{color:#ffd700}
+.box.blue{background:rgba(0,170,255,0.04);border-color:rgba(0,170,255,0.15)}
+.box.blue .label{color:#00aaff}
+.box .label{color:#ff6b35;font-weight:bold;display:block;margin-bottom:3px}
+.box code{color:#ffaa00;font-size:0.92em}
+.code-block{background:#050510;padding:12px;border-radius:6px;margin:8px 0;font-family:monospace;font-size:0.82em;color:#aaa;white-space:pre-wrap;overflow-x:auto;border:1px solid rgba(255,255,255,0.06)}
+.code-block .hl{color:#ff6b35}
+.code-block .cm{color:#888;font-style:italic}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:0.88em}
+th{background:rgba(255,107,53,0.08);color:#ffaa00;padding:8px;text-align:left;border:1px solid rgba(255,107,53,0.12)}
+td{padding:7px 8px;border:1px solid rgba(255,255,255,0.05);color:#bbb}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.75em;margin:1px}
+.tag.green{background:rgba(0,255,136,0.15);color:#00ff88}
+.tag.yellow{background:rgba(255,215,0,0.15);color:#ffd700}
+.tag.red{background:rgba(255,107,107,0.15);color:#ff6b6b}
+.tag.blue{background:rgba(0,170,255,0.15);color:#00aaff}
+ul{padding-left:18px}
+li{color:#bbb;margin-bottom:5px;font-size:0.95em}
+.verdict{padding:18px;border-radius:10px;margin:14px 0;text-align:center}
+.verdict-truth{background:rgba(0,255,136,0.04);border:2px solid #00ff88}
+.verdict-truth h3{color:#00ff88}
+.verdict-bitter{background:rgba(255,107,107,0.04);border:2px solid #ff6b6b}
+.verdict-bitter h3{color:#ff6b6b}
+.verdict-caution{background:rgba(255,215,0,0.04);border:2px solid #ffd700}
+.verdict-caution h3{color:#ffd700}
+.footer{text-align:center;padding:30px;color:#555;border-top:1px solid rgba(255,255,255,0.05);margin-top:30px;font-size:0.85em}
+@media(max-width:600px){.header h1{font-size:1.4em}.section{padding:18px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>&#x2699; এজেন্ট-এডিটর সংযোগ: MCP + Session Layer</h1>
+  <div class="sub">পাইপ (MCP) আলাদা, পানি (Agent Execution) আলাদা</div>
+  <span class="badge">&#x1F50D; MCP TypeScript SDK v0.6 + Groq Remote MCP বিশ্লেষণ | মে ২০২৬</span>
+</div>
+
+<!-- ===== মূল উপলব্ধি ===== -->
+<div class="section">
+  <h2>&#x1F4A1; মূল উপলব্ধি: পাইপ বনাম পানি</h2>
+
+  <div class="box blue">
+    <span class="label">&#x1F4AD; পরিষ্কার করে বলা</span>
+    <p>
+      আপনি আগে <strong>সেশন</strong> তৈরি করে রেখেছেন। সেখানে <strong>পাইপ</strong> ইতিমধ্যেই আছে। 
+      আমি শুধু পাইপের মুখে পানি দিচ্ছি। আমার response আপনার main workstation-এ যায়, আমার 
+      server-এ নয় — কারণ session আপনার সাথে binded।
+    </p>
+    <p style="margin-top:6px">
+      এখন প্রশ্ন: <strong>"অন্য মানুষের জমির উপরে পাইপ কিভাবে বসাবো?"</strong><br>
+      MCP সেই অনুমতি দিয়েছে — তাদের প্রটোকল মেনে পাইপ বসানোর অনুমতি। কিন্তু পানি (Agent Execution) 
+      আমাদেরই দিতে হবে।
+    </p>
+  </div>
+
+  <div class="verdict verdict-bitter">
+    <h3>&#x26A0; MCP কখনোই Agent Execution দেবে না</h3>
+    <p style="margin-top:6px;color:#ccc">
+      এটা deliberate design। MCP-র কাজ শুধু <strong>Tool Discovery + Tool Calling</strong> — 
+      tools/list আর tools/call — এই দুইটা RPC endpoint। Agent Execution (কোড রান করা, 
+      টার্মিনাল চালানো, ফাইল এডিট করা) MCP-র scope-র বাইরে।<br><br>
+      যদি আমাদের এজেন্ট execute করতে না পারে, তাহলে মাস্তানের হাতে অস্ত্র তুলে দেওয়ার মত। 
+      এজেন্টকে EXECUTE করতে হবেই — এটা MCP করে না, আমাদের নিজেদের করতে হবে।
+    </p>
+  </div>
+</div>
+
+<!-- ===== MCP আর্কিটেকচার ===== -->
+<div class="section">
+  <h2>&#x1F3D7; MCP TypeScript SDK: যা আছে আর যা নেই</h2>
+
+  <h3>MCP যা দেয় (পাইপ)</h3>
+  <table>
+    <tr><th>Feature</th><th>MCP SDK</th><th>বিবরণ</th></tr>
+    <tr><td>Tool Discovery</td><td><span class="tag green">&#x2713;</span></td><td><code>client.listTools()</code> — সার্ভার থেকে টুল লিস্ট আনে</td></tr>
+    <tr><td>Tool Calling</td><td><span class="tag green">&#x2713;</span></td><td><code>client.callTool(name, args)</code> — টুল কল করে ফলাফল আনে</td></tr>
+    <tr><td>Transport</td><td><span class="tag green">&#x2713;</span></td><td>Streamable HTTP, stdio, SSE — যেকোনো মাধ্যমে সংযোগ</td></tr>
+    <tr><td>Auth</td><td><span class="tag green">&#x2713;</span></td><td>Bearer, OAuth, JWT, Client Credentials</td></tr>
+    <tr><td>Resource/Prompt</td><td><span class="tag green">&#x2713;</span></td><td>read-only data access</td></tr>
+    <tr><td>Sampling</td><td><span class="tag yellow">&#x26A0;</span></td><td>Server client-কে LLM call করতে বলতে পারে (optional)</td></tr>
+  </table>
+
+  <h3 style="margin-top:15px">MCP যা দেয় না (পানি — আমাদের তৈরি করতে হবে)</h3>
+  <table>
+    <tr><th>Feature</th><th>MCP SDK</th><th>আমাদের দরকার?</th></tr>
+    <tr><td>Agent Execution Loop</td><td><span class="tag red">&#x2717; নেই</span></td><td><span class="tag green">হ্যাঁ — আমাদের AgentService</span></td></tr>
+    <tr><td>Session State (24h)</td><td><span class="tag red">&#x2717; নেই</span></td><td><span class="tag green">হ্যাঁ — আমাদের session layer</span></td></tr>
+    <tr><td>RAG / File Search</td><td><span class="tag red">&#x2717; নেই</span></td><td><span class="tag green">হ্যাঁ — আমাদের RAGService</span></td></tr>
+    <tr><td>Multi-step Reasoning</td><td><span class="tag red">&#x2717; নেই</span></td><td><span class="tag green">হ্যাঁ — MawlanaRouter</span></td></tr>
+    <tr><td>Code Execution</td><td><span class="tag red">&#x2717; নেই</span></td><td><span class="tag green">হ্যাঁ — নিজের execute layer</span></td></tr>
+    <tr><td>Tool Execution (MCP করে)</td><td><span class="tag green">&#x2713; আছে</span></td><td>শুধু discovery/call, execution নয়</td></tr>
+  </table>
+
+  <div class="box yellow">
+    <span class="label">&#x1F50D; গুরুত্বপূর্ণ: Session Store PR rejected</span>
+    <p>
+      MCP TypeScript SDK-তে <strong>SessionStore interface</strong> আনার PR (#1193) বাতিল হয়েছে। 
+      তারা বলেছে "too large a change"। সুতরাং অফিসিয়াল SDK এখনও <strong>in-memory session</strong> 
+      ব্যবহার করে — সার্ভার রিস্টার্ট হলে session হারিয়ে যায়। আমাদের নিজেদের session layer 
+      বাধ্যতামূলক।
+    </p>
+  </div>
+</div>
+
+<!-- ===== Groq + MCP: যা বুঝলাম ===== -->
+<div class="section">
+  <h2>&#x1F310; Groq Remote MCP: ব্যবহার করব, কিন্তু Execution আমাদের</h2>
+
+  <p>
+    Groq-এর <strong>Responses API</strong> MCP support করে — <code>tools: [{ type: "mcp", server_url: "..." }]</code> 
+    দিলে Groq নিজে tool discovery + calling করে। কিন্তু এটা Groq-এর জন্য — যারা Groq-কেই model হিসেবে 
+    ব্যবহার করে। <strong>Groq MCP-র কোন proprietary signature বা deployment check নেই</strong> — 
+    এটা pure open protocol (JSON-RPC 2.0)।
+  </p>
+
+  <div class="box green">
+    <span class="label">&#x2714; Groq থেকে যা নেব</span>
+    <p>
+      &#x2714; আমরা Groq SDK ব্যবহার করি — Responses API-র MCP support কাজে লাগাব<br>
+      &#x2714; Groq-এর model list + tool-use support (llama-3.3-70b, etc.)<br>
+      &#x2714; OpenAI-compatible endpoint — যেকোনো MCP client connect করতে পারে
+    </p>
+  </div>
+
+  <div class="box red">
+    <span class="label">&#x2716; Groq যা দেয় না (আমাদেরই করতে হবে)</span>
+    <p>
+      &#x2716; এজেন্ট execution loop — Groq শুধু inference engine, agent নয়<br>
+      &#x2716; Session persistence — Groq-র session stateless, আমাদের local store দরকার<br>
+      &#x2716 Local RAG — Groq-র নিজস্ব RAG নেই (তাদের built-in tools আলাদা)<br>
+      &#x2716; Permission system — scan/write/execute permission আমাদের management
+    </p>
+  </div>
+</div>
+
+<!-- ===== প্রস্তাবিত আর্কিটেকচার ===== -->
+<div class="section">
+  <h2>&#x1F3ED; প্রস্তাবিত আর্কিটেকচার: কিছুই বদলাচ্ছি না, শুধু যোগ করছি</h2>
+
+  <div class="verdict verdict-truth">
+    <h3>&#x2714; আমাদের যা তৈরি করেছি — সব ঠিক আছে, কিছুই বদলাব না</h3>
+  </div>
+
+  <p>
+    বিদ্যমান Layer গুলো অপরিবর্তিত থাকবে:
+  </p>
+  <table>
+    <tr><th>Layer</th><th>ফাইল</th><th>কাজ</th></tr>
+    <tr><td>Agent Core</td><td><code>agentService.ts</code></td><td>ZombieCoder persona, intent detection, flag parser</td></tr>
+    <tr><td>RAG</td><td><code>ragService.ts</code></td><td>Disk-based SSOT.md, grep search, project scan</td></tr>
+    <tr><td>Router</td><td><code>mawlanaRouter.ts</code></td><td>Small-model intent classification (chat/code/rag/vision)</td></tr>
+    <tr><td>Controller</td><td><code>agentController.ts</code></td><td>HTTP handlers (chat, directory, permission, etc.)</td></tr>
+    <tr><td>Routes</td><td><code>routes/index.ts</code></td><td>7 existing agent routes</td></tr>
+  </table>
+
+  <h3>শুধু যা যোগ হবে:</h3>
+
+  <div class="box blue">
+    <span class="label">&#x2795; ১. MCP Server Endpoints (যোগ)</span>
+    <div class="code-block">
+      // NEW: MCP Protocol Endpoints on same Express server
+      // Editor connects via MCP → discovers our tools
+      
+      POST /mcp  <span class="cm">// JSON-RPC endpoint for MCP</span>
+        &#x2502; tools/list  → returns [rag_search, scan_project, read_file, ...]
+        &#x2502; tools/call  → executes tool, returns result
+        &#x2502; resources/list → returns SSOT.md, project tree
+    </div>
+  </div>
+
+  <div class="box blue">
+    <span class="label">&#x2795; ২. Session Layer (যোগ)</span>
+    <div class="code-block">
+      // NEW: Local Session Store
+      // 24-hour session, persisted to disk
+      
+      class SessionStore {
+        create(clientId, config)    <span class="cm">// নতুন session তৈরি</span>
+        get(sessionId)              <span class="cm">// session পুনরুদ্ধার</span>
+        update(sessionId, delta)    <span class="cm">// session state আপডেট</span>
+        delete(sessionId)           <span class="cm">// session মুছে ফেলা</span>
+        cleanup()                   <span class="cm">// expired sessions মুছে ফেলা (24h)</span>
+      }
+      
+      <span class="cm">// Store: sessions.json in .zombiecoder/</span>
+      <span class="cm">// Same permission system as RAG</span>
+    </div>
+  </div>
+
+  <div class="box blue">
+    <span class="label">&#x2795; ৩. MCP ↔ Agent Bridge (যোগ)</span>
+    <div class="code-block">
+      // NEW: MCP <-> Agent Adapter
+      // MCP tools/call → internally calls our existing AgentService
+      
+      async function handleMcpToolCall(name, args) {
+        switch(name) {
+          case "rag_search":
+            return ragService.searchSection(args.query);
+          case "scan_project":
+            return ragService.scanFiles(args.directory);
+          case "agent_chat":
+            <span class="cm">// আমাদের existing agentService.chat() call করে</span>
+            return agentService.chat(args.message, session.getContext());
+          case "execute_command":
+            <span class="cm">// permission check → execute → result</span>
+            return permissionService.execute(args.command);
+        }
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ===== Session Architecture ===== -->
+<div class="section">
+  <h2>&#x1F4CB; Session Layer — বিস্তারিত</h2>
+
+  <p>
+    Session Layer-এর কাজ: এডিটর এবং এজেন্টের মধ্যে <strong>continuous pipe</strong> তৈরি করে রাখা। 
+    Groq বা অন্য কোনো cloud session ডাউন হলেও যাতে আমাদের pipe কাজ করতে থাকে।
+  </p>
+
+  <h3>Session Data Structure</h3>
+  <div class="code-block">
+    {
+      "sessionId": "zombie_abc123",
+      "clientId": "vscode_win_user1",
+      "createdAt": "2026-05-27T10:00:00Z",
+      "expiresAt": "2026-05-28T10:00:00Z",  <span class="cm">// 24h TTL</span>
+      "lastActivity": "2026-05-27T14:30:00Z",
+      "config": {
+        "directory": "C:\\projects\\my-app",
+        "permissions": ["scan", "read"],
+        "model": "llama-3.3-70b-versatile"
+      },
+      "context": {
+        "conversation": [],          <span class="cm">// message history (last 50)</span>
+        "currentFile": null,
+        "projectTree": {}
+      },
+      "pipeState": {
+        "streaming": true,
+        "lastToolCall": null,
+        "pendingApproval": false
+      }
+    }
+  </div>
+
+  <h3>Session Lifecycle</h3>
+  <table>
+    <tr><th>Event</th><th>Action</th></tr>
+    <tr><td>Client connects</td><td><code>sessionStore.create()</code> — নতুন session, pipe ready</td></tr>
+    <tr><td>Agent responds</td><td><code>session.context.conversation.push()</code> — history update</td></tr>
+    <tr><td>Client disconnects</td><td>Session stays in local store (24h পর্যন্ত)</td></tr>
+    <tr><td>Client reconnects</td><td><code>sessionStore.get(sessionId)</code> — পুরনো pipe resume</td></tr>
+    <tr><td>Cloud session dies</td><td>আমাদের local session intact — cloud recreate করতে পারে না</td></tr>
+    <tr><td>24h expires</td><td><code>sessionStore.cleanup()</code> — auto-delete</td></tr>
+  </table>
+
+  <div class="box green">
+    <span class="label">&#x2714; কেন local store গুরুত্বপূর্ণ</span>
+    <p>
+      &#x2714; Cloud session ডাউন হলে ইউজার আবার authenticate করতে বাধ্য হবে না<br>
+      &#x2714; 24 hour retention — ইউজারের কাজ continuity পায়<br>
+      &#x2714; Cloud provider session recreate করতে পারে না — আমাদের permission ছাড়া<br>
+      &#x2714| SSOT.md-র পাশেই .zombiecoder/sessions/ ফোল্ডারে save — same permission system
+    </p>
+  </div>
+</div>
+
+<!-- ===== Complete Architecture ===== -->
+<div class="section">
+  <h2>&#x1F9F0; Complete Architecture: আগে vs এখন</h2>
+
+  <h3>&#x2716; আগে (ভুল পথ)</h3>
+  <div class="code-block">
+    Editor ──HTTP──&#x25B6; Custom Router ──&#x25B6; Custom Agent ──&#x25B6; Groq API
+                        &#x2502;              &#x2502;
+                    MawlanaRouter      AgentService
+                    (extra layer)      (duplicate logic)
+  </div>
+
+  <h3>&#x2714; এখন (সঠিক পথ — কিছুই বাদ যাচ্ছে না, শুধু যোগ)</h3>
+  <div class="code-block">
+    <span class="hl">Editor (MCP Client)</span>                  <span class="hl">আমাদের Bridge (MCP Server + Agent)</span>
+    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+    &#x2502; VS Code / Cursor / etc &#x2502;     &#x2502;  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;  &#x2502;
+    &#x2502; &#x25B6; MCP Protocol ─────&#x2502;──&#x25B6;&#x2502; MCP Server  &#x2502;  &#x2502; Session    &#x2502;  &#x2502;
+    &#x2502; &#x25B6; tools/list       &#x2502;     &#x2502;  &#x2502; (endpoints)  &#x2502;  &#x2502; Store      &#x2502;  &#x2502;
+    &#x2502; &#x25B6; tools/call       &#x2502;     &#x2502;  &#x2514;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;  &#x2514;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518  &#x2502;
+    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518     &#x2502;       &#x2502;              &#x2502;           &#x2502;
+                                &#x2502;       &#x2502;  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;    &#x2502;
+                                &#x2502;       &#x2514;&#x2500;&#x25B6;&#x2502; Existing Layers (unchanged) &#x2502;&#x2500;&#x2500;&#x2514;
+                                &#x2502;                &#x2502;                           &#x2502;
+                                &#x2502;                &#x2502;  AgentService              &#x2502;
+                                &#x2502;                &#x2502;  RAGService                &#x2502;
+                                &#x2502;                &#x2502;  MawlanaRouter             &#x2502;
+                                &#x2502;                &#x2502;  Permission System         &#x2502;
+                                &#x2502;                &#x2502;  Groq SDK (Responses API)   &#x2502;
+                                &#x2502;                &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                                &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+  </div>
+</div>
+
+<!-- ===== সিদ্ধান্ত ===== -->
+<div class="section">
+  <h2>&#x1F3C1; Final Plan: কী করতে হবে</h2>
+
+  <table>
+    <tr><th>#</th><th>কাজ</th><th>ফাইল</th><th>সময়</th></tr>
+    <tr><td>1</td><td>Session Store তৈরি</td><td><code>src/services/sessionStore.ts</code></td><td>১ দিন</td></tr>
+    <tr><td>2</td><td>MCP Server endpoints</td><td><code>src/services/mcpServer.ts</code></td><td>১ দিন</td></tr>
+    <tr><td>3</td><td>MCP ↔ Agent Adapter</td><td><code>src/services/mcpAdapter.ts</code></td><td>১ দিন</td></tr>
+    <tr><td>4</td><td>Session + MCP routes</td><td><code>src/routes/index.ts</code> (add)</td><td>অর্ধ দিন</td></tr>
+    <tr><td>5</td><td>Init in server start</td><td><code>src/index.ts</code> (add)</td><td>২ ঘণ্টা</td></tr>
+  </table>
+
+  <div class="box green">
+    <span class="label">&#x2714; কী বদলাচ্ছে না</span>
+    <p>
+      &#x2714; AgentService — একই থাকবে<br>
+      &#x2714; RAGService — একই থাকবে<br>
+      &#x2714; MawlanaRouter — একই থাকবে<br>
+      &#x2714; agentController.ts — একই থাকবে (HTTP endpoints parallel)<br>
+      &#x2714; Permission system — session store ও একই permission system use করবে<br>
+      &#x2714; Groq SDK — যেমন আছে তেমনই
+    </p>
+  </div>
+
+  <div class="box yellow">
+    <span class="label">&#x26A0; MCP Dependency</span>
+    <p>
+      MCP protocol নিজে implement করা সম্ভব (JSON-RPC 2.0 মাত্র ২টা endpoint)। তবে 
+      <code>@modelcontextprotocol/server</code> বা <code>@modelcontextprotocol/client</code> 
+      package use করলে compatibility নিশ্চিত। Groq-ও একই SDK use করে — তাদের remote MCP support 
+      এর জন্য। আমরা তাদের decision অনুসরণ করব।
+    </p>
+  </div>
+
+  <div class="verdict verdict-truth">
+    <h3>&#x2714; সংক্ষেপ: পাইপ MCP দিয়ে, পানি আমাদের Agent দিয়ে</h3>
+    <p style="margin-top:6px;color:#ccc">
+      এডিটর MCP protocol-এ আমাদের সাথে কথা বলে। টুল discovery MCP-র মাধ্যমে।<br>
+      কিন্তু Agent Execution, RAG, Session — সব আমাদের existing layer-এ।<br>
+      Groq শুধু inference engine — agent architect আমাদের।
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  <p>ZombieCoder Agent &mdash; MCP for connection, Our Code for execution</p>
+  <p style="margin-top:4px">&#x2699; Session-backed, Permission-gated, Locally-rooted | মে ২০২৬</p>
+</div>
+
+</div>
+</body>
+</html>

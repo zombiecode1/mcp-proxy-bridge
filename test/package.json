@@ -1,0 +1,25 @@
+{
+  "name": "mcp-server-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive MCP server testing suite",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test:auto": "node test-auto-connected.js",
+    "test:local": "node test-local-mcp.js",
+    "test:proxy-bridge": "node test-proxy-bridge.js",
+    "test:proxy": "node test-proxy.js",
+    "test:all": "node run-all-tests.js"
+  },
+  "keywords": [
+    "mcp",
+    "testing",
+    "model-context-protocol"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "langchain": "^1.4.4",
+    "mcp-use": "^1.28.0"
+  }
+}

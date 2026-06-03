@@ -1,0 +1,25 @@
+{
+  "context_servers": {
+    "mcp-agent-server": {
+      "command": "node",
+      "args": ["./dist/server.js"]
+    },
+    "proxi-bridge": {
+      "url": "http://localhost:5001/mcp",
+      "description": "ZombieCoder proxi bridge — Groq-powered MCP with workspace indexing, conversation management, and SSE streaming"
+    }
+  },
+  "agent": {
+    "tool_permissions": {
+      "tools": {
+        "mcp:mcp-agent-server:ping_agent": { "default": "allow" },
+        "mcp:mcp-agent-server:verify_session": { "default": "allow" },
+        "mcp:mcp-agent-server:run_agent": { "default": "allow" },
+        "mcp:proxi-bridge:workspace_index": { "default": "allow" },
+        "mcp:proxi-bridge:workspace_search": { "default": "allow" },
+        "mcp:proxi-bridge:ssot_read": { "default": "allow" },
+        "mcp:proxi-bridge:project_status": { "default": "allow" }
+      }
+    }
+  }
+}

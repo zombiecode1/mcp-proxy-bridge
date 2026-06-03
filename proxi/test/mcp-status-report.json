@@ -1,0 +1,756 @@
+{
+  "startedAt": "2026-05-28T02:27:15.086Z",
+  "baseUrl": "http://localhost:5001",
+  "os": {
+    "platform": "linux",
+    "release": "6.8.0-117-generic",
+    "hostname": "sahon-All-Series"
+  },
+  "initialMcp": {
+    "protocol": "jsonrpc-2.0",
+    "name": "proxi-mcp",
+    "version": "1.0.0",
+    "tools": 8,
+    "resources": 4,
+    "status": {
+      "persona": "ZombieCoder",
+      "workingDir": "/home/sahon/Desktop/Bridge/proxi",
+      "hasWorkingDir": true,
+      "ssotExists": true,
+      "zombieDirExists": true,
+      "index": {
+        "documents": 37,
+        "chunks": 344,
+        "workspaces": 11
+      },
+      "indexError": null,
+      "mcp": {
+        "activeSessions": 0,
+        "initializedSessions": 0,
+        "clientNames": [],
+        "sessions": [],
+        "recentEvents": []
+      }
+    }
+  },
+  "clients": [
+    {
+      "name": "VS Code",
+      "version": "1.0.0",
+      "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+      "init": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "content-length": "324",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "etag": "W/\"144-j+Udti3ECH7g0ZHmGctaC0gmZcM\"",
+          "keep-alive": "timeout=5",
+          "mcp-protocol-version": "2025-03-26",
+          "mcp-session-id": "37c717fc-941e-4033-9580-ec78333ab12b",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": {
+          "jsonrpc": "2.0",
+          "id": "VS Code-init",
+          "result": {
+            "protocolVersion": "2025-03-26",
+            "serverInfo": {
+              "name": "proxi-mcp",
+              "version": "1.0.0"
+            },
+            "capabilities": {
+              "logging": {},
+              "resources": {
+                "subscribe": true,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "instructions": "Call tools/list or resources/list after notifications/initialized."
+          }
+        }
+      },
+      "initialized": {
+        "status": 204,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "keep-alive": "timeout=5",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": null
+      },
+      "logLevel": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "content-length": "68",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "etag": "W/\"44-S4yXc7JPQTgqJCvUf+mziltcaZM\"",
+          "keep-alive": "timeout=5",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": {
+          "jsonrpc": "2.0",
+          "id": "VS Code-log-level",
+          "result": {
+            "level": "info"
+          }
+        }
+      }
+    },
+    {
+      "name": "JetBrains",
+      "version": "1.0.0",
+      "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+      "init": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "content-length": "326",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "etag": "W/\"146-+r3y46vIiRZF4wQmFOWE/XjdDIw\"",
+          "keep-alive": "timeout=5",
+          "mcp-protocol-version": "2025-03-26",
+          "mcp-session-id": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": {
+          "jsonrpc": "2.0",
+          "id": "JetBrains-init",
+          "result": {
+            "protocolVersion": "2025-03-26",
+            "serverInfo": {
+              "name": "proxi-mcp",
+              "version": "1.0.0"
+            },
+            "capabilities": {
+              "logging": {},
+              "resources": {
+                "subscribe": true,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              }
+            },
+            "instructions": "Call tools/list or resources/list after notifications/initialized."
+          }
+        }
+      },
+      "initialized": {
+        "status": 204,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "keep-alive": "timeout=5",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": null
+      },
+      "logLevel": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "connection": "keep-alive",
+          "content-length": "70",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Thu, 28 May 2026 02:27:15 GMT",
+          "etag": "W/\"46-tC76bZ/s39nY+vG10fNKexhqICs\"",
+          "keep-alive": "timeout=5",
+          "vary": "Origin",
+          "x-identity-hash": "ee7d57830aec8d7bfaf301b5d8b81214911660ffa69ba8113aa6c0841ab5a18a",
+          "x-identity-name": "ZombieCoder",
+          "x-identity-version": "1.0.0",
+          "x-powered-by": "ZombieCoder-by-SahonSrabon"
+        },
+        "data": {
+          "jsonrpc": "2.0",
+          "id": "JetBrains-log-level",
+          "result": {
+            "level": "info"
+          }
+        }
+      }
+    }
+  ],
+  "mcpStatusAfterClients": {
+    "protocol": "jsonrpc-2.0",
+    "name": "proxi-mcp",
+    "version": "1.0.0",
+    "tools": 8,
+    "resources": 4,
+    "status": {
+      "persona": "ZombieCoder",
+      "workingDir": "/home/sahon/Desktop/Bridge/proxi",
+      "hasWorkingDir": true,
+      "ssotExists": true,
+      "zombieDirExists": true,
+      "index": {
+        "documents": 37,
+        "chunks": 344,
+        "workspaces": 11
+      },
+      "indexError": null,
+      "mcp": {
+        "activeSessions": 2,
+        "initializedSessions": 2,
+        "clientNames": [
+          "JetBrains",
+          "VS Code"
+        ],
+        "sessions": [
+          {
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "protocolVersion": "2025-03-26",
+            "clientInfo": {
+              "name": "JetBrains",
+              "version": "1.0.0"
+            },
+            "capabilities": {},
+            "logLevel": "info",
+            "initialized": true,
+            "createdAt": "2026-05-28T02:27:15.152Z",
+            "updatedAt": "2026-05-28T02:27:15.160Z",
+            "lastMethod": "logging/setLevel"
+          },
+          {
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "protocolVersion": "2025-03-26",
+            "clientInfo": {
+              "name": "VS Code",
+              "version": "1.0.0"
+            },
+            "capabilities": {},
+            "logLevel": "info",
+            "initialized": true,
+            "createdAt": "2026-05-28T02:27:15.140Z",
+            "updatedAt": "2026-05-28T02:27:15.149Z",
+            "lastMethod": "logging/setLevel"
+          }
+        ],
+        "recentEvents": [
+          {
+            "timestamp": "2026-05-28T02:27:15.141Z",
+            "category": "mcp",
+            "event": "initialize",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "clientName": "VS Code",
+            "clientVersion": "1.0.0",
+            "method": "initialize",
+            "status": "ok",
+            "details": {
+              "protocolVersion": "2025-03-26"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.146Z",
+            "category": "mcp",
+            "event": "initialized_notification",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "clientName": "VS Code",
+            "clientVersion": "1.0.0",
+            "method": "notifications/initialized",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.149Z",
+            "category": "mcp",
+            "event": "logging_set_level",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "method": "logging/setLevel",
+            "status": "ok",
+            "details": {
+              "level": "info"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.152Z",
+            "category": "mcp",
+            "event": "initialize",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "clientName": "JetBrains",
+            "clientVersion": "1.0.0",
+            "method": "initialize",
+            "status": "ok",
+            "details": {
+              "protocolVersion": "2025-03-26"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.156Z",
+            "category": "mcp",
+            "event": "initialized_notification",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "clientName": "JetBrains",
+            "clientVersion": "1.0.0",
+            "method": "notifications/initialized",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.160Z",
+            "category": "mcp",
+            "event": "logging_set_level",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "method": "logging/setLevel",
+            "status": "ok",
+            "details": {
+              "level": "info"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "toolsList": {
+    "status": 200,
+    "count": 8,
+    "names": [
+      "workspace_index",
+      "workspace_search",
+      "conversation_create",
+      "conversation_history",
+      "conversation_list",
+      "ssot_read",
+      "project_status",
+      "agent_routes"
+    ]
+  },
+  "resourcesList": {
+    "status": 200,
+    "count": 4,
+    "names": [
+      "Agent status",
+      "SSOT",
+      "Vector index stats",
+      "Conversation list"
+    ]
+  },
+  "workspace": {
+    "workspaceId": "ws-report-1779935235197",
+    "directory": "/tmp/proxi-mcp-report-JzF238",
+    "permission": {
+      "ok": true,
+      "message": "Permission granted for: scan"
+    },
+    "setDirectory": {
+      "ok": true,
+      "directory": "/tmp/proxi-mcp-report-JzF238",
+      "ssotExists": true,
+      "message": "Directory ready. Agent can work."
+    },
+    "manualIndex": {
+      "ok": true,
+      "result": {
+        "workspaceId": "ws-report-1779935235197",
+        "directory": "/tmp/proxi-mcp-report-JzF238",
+        "filesScanned": 1,
+        "documentsIndexed": 1,
+        "chunksIndexed": 1,
+        "skippedFiles": 0
+      },
+      "stats": {
+        "documents": 38,
+        "chunks": 345,
+        "workspaces": 12
+      }
+    },
+    "search": {
+      "ok": true,
+      "result": {
+        "query": "vector index status events MCP sessions",
+        "matches": [
+          {
+            "chunk_id": "7f650af069fb021ab6bc755afb608f56e864c9fc0ad50652962285a0ea99a224",
+            "source_path": "notes.md",
+            "chunk_index": 0,
+            "chunk_text": "Updated content about vector index, status events, and MCP sessions.",
+            "score": 0,
+            "token_count": 10,
+            "metadata": {
+              "file_size": 68,
+              "indexed_from": "/tmp/proxi-mcp-report-JzF238"
+            }
+          }
+        ]
+      },
+      "stats": {
+        "documents": 38,
+        "chunks": 345,
+        "workspaces": 12
+      }
+    }
+  },
+  "conversation": {
+    "create": {
+      "conversation_id": "bd21365a-4e3d-456d-8a24-d732504dcbcd"
+    },
+    "chatStatus": 200,
+    "chatConversationId": "bd21365a-4e3d-456d-8a24-d732504dcbcd",
+    "historyStatus": 200,
+    "historyCount": 2
+  },
+  "stream": {
+    "status": 200,
+    "doneSeen": true,
+    "firstChunk": "{\"id\":\"chatcmpl-9c062c20-2a82-43fd-a4d1-e6c67e0944f2\",\"object\":\"chat.completion.chunk\",\"created\":1779935243,\"model\":\"meta-llama/llama-4-scout-17b-16e-instruct\",\"system_fingerprint\""
+  },
+  "dbCounts": {
+    "exists": true,
+    "conversations": 16,
+    "conversation_messages": 32,
+    "rag_documents": 38,
+    "rag_chunks": 345
+  },
+  "dashboard": {
+    "status": 200,
+    "hasResponseModelIndicator": true,
+    "size": 18178
+  },
+  "events": {
+    "status": 200,
+    "count": 11,
+    "recent": [
+      {
+        "timestamp": "2026-05-28T02:27:15.146Z",
+        "category": "mcp",
+        "event": "initialized_notification",
+        "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+        "clientName": "VS Code",
+        "clientVersion": "1.0.0",
+        "method": "notifications/initialized",
+        "status": "ok"
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.149Z",
+        "category": "mcp",
+        "event": "logging_set_level",
+        "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+        "method": "logging/setLevel",
+        "status": "ok",
+        "details": {
+          "level": "info"
+        }
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.152Z",
+        "category": "mcp",
+        "event": "initialize",
+        "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+        "clientName": "JetBrains",
+        "clientVersion": "1.0.0",
+        "method": "initialize",
+        "status": "ok",
+        "details": {
+          "protocolVersion": "2025-03-26"
+        }
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.156Z",
+        "category": "mcp",
+        "event": "initialized_notification",
+        "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+        "clientName": "JetBrains",
+        "clientVersion": "1.0.0",
+        "method": "notifications/initialized",
+        "status": "ok"
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.160Z",
+        "category": "mcp",
+        "event": "logging_set_level",
+        "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+        "method": "logging/setLevel",
+        "status": "ok",
+        "details": {
+          "level": "info"
+        }
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.182Z",
+        "category": "mcp",
+        "event": "tools_list",
+        "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+        "method": "tools/list",
+        "status": "ok"
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.188Z",
+        "category": "mcp",
+        "event": "resources_list",
+        "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+        "method": "resources/list",
+        "status": "ok"
+      },
+      {
+        "timestamp": "2026-05-28T02:27:15.210Z",
+        "category": "workspace",
+        "event": "watcher_started",
+        "workspaceId": "ws-report-1779935235197",
+        "directory": "/tmp/proxi-mcp-report-JzF238",
+        "details": {
+          "debounceMs": 1500
+        }
+      },
+      {
+        "timestamp": "2026-05-28T02:27:19.123Z",
+        "category": "workspace",
+        "event": "watcher_reindex_started",
+        "workspaceId": "ws-report-1779935235197",
+        "directory": "/tmp/proxi-mcp-report-JzF238"
+      },
+      {
+        "timestamp": "2026-05-28T02:27:19.768Z",
+        "category": "workspace",
+        "event": "watcher_reindex_completed",
+        "workspaceId": "ws-report-1779935235197",
+        "directory": "/tmp/proxi-mcp-report-JzF238",
+        "status": "ok",
+        "details": {
+          "fileCount": 1
+        }
+      }
+    ]
+  },
+  "mcpStatusAfterWork": {
+    "protocol": "jsonrpc-2.0",
+    "name": "proxi-mcp",
+    "version": "1.0.0",
+    "tools": 8,
+    "resources": 4,
+    "status": {
+      "persona": "ZombieCoder",
+      "workingDir": "/tmp/proxi-mcp-report-JzF238",
+      "hasWorkingDir": true,
+      "ssotExists": true,
+      "zombieDirExists": true,
+      "index": {
+        "documents": 38,
+        "chunks": 345,
+        "workspaces": 12
+      },
+      "indexError": null,
+      "mcp": {
+        "activeSessions": 2,
+        "initializedSessions": 2,
+        "clientNames": [
+          "VS Code",
+          "JetBrains"
+        ],
+        "sessions": [
+          {
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "protocolVersion": "2025-03-26",
+            "clientInfo": {
+              "name": "VS Code",
+              "version": "1.0.0"
+            },
+            "capabilities": {},
+            "logLevel": "info",
+            "initialized": true,
+            "createdAt": "2026-05-28T02:27:15.140Z",
+            "updatedAt": "2026-05-28T02:27:15.188Z",
+            "lastMethod": "resources/list"
+          },
+          {
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "protocolVersion": "2025-03-26",
+            "clientInfo": {
+              "name": "JetBrains",
+              "version": "1.0.0"
+            },
+            "capabilities": {},
+            "logLevel": "info",
+            "initialized": true,
+            "createdAt": "2026-05-28T02:27:15.152Z",
+            "updatedAt": "2026-05-28T02:27:15.160Z",
+            "lastMethod": "logging/setLevel"
+          }
+        ],
+        "recentEvents": [
+          {
+            "timestamp": "2026-05-28T02:27:15.141Z",
+            "category": "mcp",
+            "event": "initialize",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "clientName": "VS Code",
+            "clientVersion": "1.0.0",
+            "method": "initialize",
+            "status": "ok",
+            "details": {
+              "protocolVersion": "2025-03-26"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.146Z",
+            "category": "mcp",
+            "event": "initialized_notification",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "clientName": "VS Code",
+            "clientVersion": "1.0.0",
+            "method": "notifications/initialized",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.149Z",
+            "category": "mcp",
+            "event": "logging_set_level",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "method": "logging/setLevel",
+            "status": "ok",
+            "details": {
+              "level": "info"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.152Z",
+            "category": "mcp",
+            "event": "initialize",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "clientName": "JetBrains",
+            "clientVersion": "1.0.0",
+            "method": "initialize",
+            "status": "ok",
+            "details": {
+              "protocolVersion": "2025-03-26"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.156Z",
+            "category": "mcp",
+            "event": "initialized_notification",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "clientName": "JetBrains",
+            "clientVersion": "1.0.0",
+            "method": "notifications/initialized",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.160Z",
+            "category": "mcp",
+            "event": "logging_set_level",
+            "sessionId": "57b236e2-468c-4a92-bbba-f28218fc4d26",
+            "method": "logging/setLevel",
+            "status": "ok",
+            "details": {
+              "level": "info"
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.182Z",
+            "category": "mcp",
+            "event": "tools_list",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "method": "tools/list",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.188Z",
+            "category": "mcp",
+            "event": "resources_list",
+            "sessionId": "37c717fc-941e-4033-9580-ec78333ab12b",
+            "method": "resources/list",
+            "status": "ok"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:15.210Z",
+            "category": "workspace",
+            "event": "watcher_started",
+            "workspaceId": "ws-report-1779935235197",
+            "directory": "/tmp/proxi-mcp-report-JzF238",
+            "details": {
+              "debounceMs": 1500
+            }
+          },
+          {
+            "timestamp": "2026-05-28T02:27:19.123Z",
+            "category": "workspace",
+            "event": "watcher_reindex_started",
+            "workspaceId": "ws-report-1779935235197",
+            "directory": "/tmp/proxi-mcp-report-JzF238"
+          },
+          {
+            "timestamp": "2026-05-28T02:27:19.768Z",
+            "category": "workspace",
+            "event": "watcher_reindex_completed",
+            "workspaceId": "ws-report-1779935235197",
+            "directory": "/tmp/proxi-mcp-report-JzF238",
+            "status": "ok",
+            "details": {
+              "fileCount": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "summary": {
+    "clientCount": 2,
+    "initializedClientCount": 2,
+    "indexedDocuments": 38,
+    "indexedChunks": 345,
+    "recentEvents": 11,
+    "documentationWritten": true,
+    "ssotUpdated": true
+  },
+  "documentation": {
+    "status": 200,
+    "conversationId": "14416f02-605e-482f-96ed-88ea45bca102",
+    "response": "প্রজেক্ট বর্ণনা:\n\n**সার্ভার ক্ষমতা**\nআমাদের সার্ভার উন্নত-স্তরের ডেটা পরিচালনা, স্টোরেজ এবং বিতরণ ক্ষমতা সম্পন্ন। এটি উচ্চ-গতিসম্পন্ন, দক্ষ এবং বিশ্বস্ত পরিষেবা প্রদান করে।\n\n**MCP ক্লায়েন্ট সেশন ফ্লো**\nক্লায়েন্ট সার্ভার সাথে যোগাযোগ শুরু করে এবং বৈধতা পরীক্ষা, ইউজার অ্যাকাউন্ট অ্যাক্টিভেশন, ডেটা প্রেরণ এবং রিসিভাল জড়িত। সময়-পার্শ্বিক রেফ্রেশ, সার্ভার উপস্থাপনের আপডেট এবং ক্লায়েন্ট ম্যাজিক নম্বর (MCP) রিফ্রেশ সহ অধিক দক্ষতা উন্নীত হয়ে",
+    "docPath": "/home/sahon/Desktop/Bridge/proxi/documentation/agent-proof/report-bn.md",
+    "jsonPath": "/home/sahon/Desktop/Bridge/proxi/documentation/agent-proof/report.json",
+    "responseLength": 443
+  },
+  "repoPermission": {
+    "ok": true,
+    "message": "Permission granted for: scan"
+  },
+  "repoDirectory": {
+    "ok": true,
+    "directory": "/home/sahon/Desktop/Bridge/proxi",
+    "ssotExists": true,
+    "message": "Directory ready. Agent can work."
+  },
+  "repoReindex": {
+    "found": false,
+    "event": null,
+    "count": 0
+  },
+  "ssot": {
+    "status": 200,
+    "containsAgentProof": true,
+    "containsLatestDoc": false,
+    "size": 5941
+  }
+}

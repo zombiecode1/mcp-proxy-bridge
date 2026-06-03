@@ -34,6 +34,16 @@ type McpSessionRecord = {
 
 const MCP_PROTOCOL_VERSION = '2025-03-26';
 const mcpSessions = new Map<string, McpSessionRecord>();
+const SESSION_TTL_MS = 30 * 60 * 1000;
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, session] of mcpSessions) {
+    if (now - new Date(session.updatedAt).getTime() > SESSION_TTL_MS) {
+      mcpSessions.delete(id);
+    }
+  }
+}, 60_000);
 
 function rpcResult(id: JsonRpcRequest['id'], result: any) {
   return { jsonrpc: '2.0', id: id ?? null, result };

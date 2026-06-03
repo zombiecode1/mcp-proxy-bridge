@@ -1,0 +1,65 @@
+{
+  "patch": "04",
+  "title": "OAuth Authentication + LangGraph Recursion Limit Fix",
+  "timestamp": "2026-06-03T00:20:31.075Z",
+  "framework": "mcp-use v1.28.0",
+  "oauthProvider": "oauthProxy (HS256 JWT, proxy mode)",
+  "oauthConfig": {
+    "type": "proxy (local metadata)",
+    "issuer": "mcp-agent-server",
+    "endpoints": [
+      "/.well-known/*",
+      "/mcp/* (Bearer auth)"
+    ]
+  },
+  "fixes": [
+    "agent.ts: maxSteps = Math.max(options.maxSteps ?? config.agentMaxSteps, 3) → recursionLimit >= 9",
+    "agent.ts: generator protocol instead of for-await + run() to capture stream return value",
+    "agent.ts: removed streaming:true (ChatMessageChunk with type 'generic' isn't detected as AIMessage)",
+    "server.ts: oauthProxy instead of oauthCustomProvider (no metadata self-fetch loop)",
+    "config.ts: added MCP_OAUTH_SECRET / MCP_OAUTH_ISSUER env vars"
+  ],
+  "tests": [
+    {
+      "name": "1-list-tools-auth",
+      "ok": true,
+      "detail": "tools=3"
+    },
+    {
+      "name": "2-list-tools-noauth",
+      "ok": true,
+      "detail": "status=401"
+    },
+    {
+      "name": "3-ping-agent-auth",
+      "ok": true,
+      "detail": "auth_user=true"
+    },
+    {
+      "name": "4-run-agent-fixed",
+      "ok": true,
+      "detail": "output=\"ভাইয়া, hello\""
+    },
+    {
+      "name": "5-verify-session-auth",
+      "ok": true,
+      "detail": "ok=true"
+    },
+    {
+      "name": "6-run-agent-full",
+      "ok": true,
+      "detail": "output=\"ভাইয়া, hello\""
+    },
+    {
+      "name": "7-oauth-metadata",
+      "ok": true,
+      "detail": "status=200"
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "allPassed": true
+  }
+}

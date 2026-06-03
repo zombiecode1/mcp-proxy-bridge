@@ -2,7 +2,7 @@
   "mcpServers": {
     "mcp-agent-server": {
       "command": "node",
-      "args": ["./dist/server.js"],
+      "args": ["/home/sahon/mcp/mcp/dist/server.js"],
       "cwd": "${workspaceFolder}"
     }
   }

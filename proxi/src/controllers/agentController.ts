@@ -8,7 +8,7 @@ import { getIdentity } from '../services/identityService';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { initStateDb, upsertModels, upsertModelRateLimits, upsertPersona, isWorkspaceTrusted, ensureConversation, addConversationMessage, upsertWorkspaceTrust } from '../services/stateDb';
+import { initStateDb, setStateDb, upsertModels, upsertModelRateLimits, upsertPersona, isWorkspaceTrusted, ensureConversation, addConversationMessage, upsertWorkspaceTrust } from '../services/stateDb';
 import { startWorkspaceWatcher, WorkspaceWatcher } from '../services/workspaceWatcher';
 import { VectorIndexService } from '../services/vectorIndexService';
 
@@ -43,6 +43,7 @@ export const initializeAgentSystem = (workingDir?: string) => {
     if (!fs.existsSync(zdir)) fs.mkdirSync(zdir, { recursive: true });
     const dbPath = path.join(zdir, 'state.db');
     stateDb = initStateDb(dbPath);
+    setStateDb(stateDb);
     vectorIndexService = new VectorIndexService(stateDb);
 
     const identity = getIdentity();
@@ -226,11 +227,17 @@ export const handleAgentChat = async (req: Request, res: Response) => {
         'X-Accel-Buffering': 'no',
       });
 
+      let aborted = false;
+      req.on('close', () => { aborted = true; });
+
       for await (const chunk of stream as any) {
+        if (aborted) break;
         res.write(`data: ${JSON.stringify(chunk)}\n\n`);
       }
-      res.write('data: [DONE]\n\n');
-      return res.end();
+      if (!aborted) {
+        res.write('data: [DONE]\n\n');
+        return res.end();
+      }
     }
 
     const completion: any = await groq.createChatCompletion(params);
@@ -253,7 +260,7 @@ export const handleAgentChat = async (req: Request, res: Response) => {
       conversation_id: convoId,
     });
   } catch (err: any) {
-    console.error('❌ Agent error:', err.message);
+    console.error('❌ Agent error:', err.stack || err.message);
     res.status(err.status || 500).json({
       error: { message: err.message || 'Agent processing failed', type: 'server_error' },
     });

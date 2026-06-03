@@ -15,7 +15,7 @@
     "@langchain/openai": "latest",
     "dotenv": "^16.4.5",
     "langchain": "^1.4.2",
-    "mcp-use": "^1.1.8",
+    "mcp-use": "^1.28.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {

@@ -18,8 +18,7 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const CORS_ORIGINS = (process.env.CORS_ORIGINS || '*').split(',').map(s => s.trim());
 
 if (!GROQ_API_KEY) {
-  console.error('GROQ_API_KEY is required in .env file');
-  process.exit(1);
+  console.warn('WARNING: GROQ_API_KEY not set — server will run in degraded mode');
 }
 
 app.use(cors({ origin: CORS_ORIGINS, credentials: true }));

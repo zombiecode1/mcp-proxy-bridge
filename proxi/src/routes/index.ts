@@ -27,6 +27,14 @@ import {
 } from '../controllers/agentController';
 import { handleMcpJsonRpc, handleMcpInfo, handleMcpSseStream, handleMcpDeleteSession } from '../controllers/mcpController';
 import { clearRuntimeEvents, readRuntimeEvents } from '../services/runtimeEventLog';
+import {
+  handleDbList, handleDbGet, handleDbStats,
+  handleGetIdentity, handleUpdateIdentity,
+  handleListLlmSources, handleCreateLlmSource, handleDeleteLlmSource,
+  handleListAgentNotes, handleCreateAgentNote, handleGetAgentNote, handleDeleteAgentNote,
+  handleListWriteLog, handleCreateWriteLog,
+  handleWriteLogWithHash, handleVerifyEntry, handleVerifyReport, handleVerifyWriteRead,
+} from '../controllers/dbController';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
@@ -109,6 +117,40 @@ router.get('/v1/agent/conversations', handleListConversations);
 router.get('/v1/agent/conversations/:conversation_id', handleGetConversationHistory);
 router.post('/v1/agent/index', handleIndexWorkspace);
 router.post('/v1/agent/search', handleSearchWorkspace);
+
+// ─── DB REST API (Phase 2 — Multi-Source SQLite) ────────
+//   GET  /db/stats             — table row counts
+//   GET  /db/:table            — list rows
+//   GET  /db/:table/:id        — get row by id
+//   GET  /db/identity          — get system identity
+//   POST /db/identity          — update system identity
+//   GET  /db/llm/sources       — list LLM sources
+//   POST /db/llm/sources       — add LLM source
+//   DELETE /db/llm/sources/:id — remove LLM source
+//   GET  /db/notes             — list agent notes
+//   POST /db/notes             — create agent note
+//   GET  /db/notes/:key        — get agent note by key
+//   DELETE /db/notes/:key      — delete agent note
+//   GET  /db/write-log         — list write log entries
+//   POST /db/write-log         — create write log entry
+router.get('/db/stats', handleDbStats);
+router.get('/db/identity', handleGetIdentity);
+router.post('/db/identity', handleUpdateIdentity);
+router.get('/db/llm/sources', handleListLlmSources);
+router.post('/db/llm/sources', handleCreateLlmSource);
+router.delete('/db/llm/sources/:id', handleDeleteLlmSource);
+router.get('/db/notes', handleListAgentNotes);
+router.post('/db/notes', handleCreateAgentNote);
+router.get('/db/notes/:key', handleGetAgentNote);
+router.delete('/db/notes/:key', handleDeleteAgentNote);
+router.get('/db/write-log', handleListWriteLog);
+router.post('/db/write-log', handleCreateWriteLog);
+router.post('/db/write-log/hash', handleWriteLogWithHash);
+router.get('/db/verify/report', handleVerifyReport);
+router.post('/db/verify/:id', handleVerifyEntry);
+router.post('/db/verify-read', handleVerifyWriteRead);
+router.get('/db/:table', handleDbList);
+router.get('/db/:table/:id', handleDbGet);
 
 // MCP-style JSON-RPC endpoints for editor/tool clients
 // Streamable HTTP Transport (MCP spec 2025-03-26)
