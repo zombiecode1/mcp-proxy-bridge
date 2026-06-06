@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { EmbeddingModel, FlagEmbedding } from 'fastembed';
 import {
   StateDb,
   deleteRagChunksForDocument,
@@ -272,14 +271,26 @@ export class VectorIndexService {
       return null;
     }
 
+    // Load the native `fastembed` package at runtime to avoid crashing
+    // when the package exposes no runtime entry point (missing index.js).
+    let fastembed: any;
     try {
-      const modelName = process.env.FASTEMBED_MODEL || EmbeddingModel.BGESmallENV15;
+      // Require dynamically to prevent a hard dependency at module load time.
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      fastembed = require('fastembed');
+    } catch (err: any) {
+      this.lastIndexError = `Failed to load fastembed: ${err?.message || String(err)}`;
+      return null;
+    }
+
+    try {
+      const modelName = process.env.FASTEMBED_MODEL || fastembed?.EmbeddingModel?.BGESmallENV15;
       const cacheDir = process.env.FASTEMBED_CACHE_DIR || path.join(process.cwd(), '.zombiecoder', 'embedding-cache');
       const customDir = process.env.FASTEMBED_CUSTOM_MODEL_DIR;
 
       if (customDir) {
-        const embedder = await FlagEmbedding.init({
-          model: EmbeddingModel.CUSTOM,
+        const embedder = await fastembed.FlagEmbedding.init({
+          model: fastembed?.EmbeddingModel?.CUSTOM ?? 'CUSTOM',
           modelAbsoluteDirPath: customDir,
           modelName: process.env.FASTEMBED_CUSTOM_MODEL_NAME || 'custom-embedding-model',
           cacheDir,
@@ -288,8 +299,8 @@ export class VectorIndexService {
         return embedder as unknown as EmbeddingProvider;
       }
 
-      const embedder = await FlagEmbedding.init({
-        model: modelName as EmbeddingModel,
+      const embedder = await fastembed.FlagEmbedding.init({
+        model: modelName as any,
         cacheDir,
         showDownloadProgress: false,
       } as any);
