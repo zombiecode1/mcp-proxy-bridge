@@ -9,3 +9,53 @@ logs/
 *.db-shm
 *.db-wal
 .turbo/
+
+# OS files
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Additional build dirs
+build/
+out/
+coverage/
+.nyc_output/
+
+# More logs
+*.log
+runtime-events.jsonl
+
+# Secrets
+proxi/identity.json
+identity.json
+secret*
+
+# Large models / embeddings
+embedding/
+*.safetensors
+*.gguf
+*.pt
+*.bin
+*.ckpt
+*.onnx
+
+# Workspace / indexes
+workspace_index/
+*.sqlite
+
+# Archives / temp
+*.tgz
+*.zip
+tmp/
+temp/
+.cache/
+
+# End of additions
